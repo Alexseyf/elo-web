@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { isAuthenticated, getAuthUser, handleLogout } from '../../utils/auth';
+import { isAuthenticated, getAuthUser, handleLogout, checkUserRole } from '../../utils/auth';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -12,25 +12,9 @@ export default function AdminDashboard() {
   const [activeSection, setActiveSection] = useState('visao-geral');
 
   useEffect(() => {
-    if (!isAuthenticated()) {
-      router.push('/login');
-      return;
+    if (checkUserRole(router, 'ADMIN')) {
+      setUserData(getAuthUser());
     }
-
-    const user = getAuthUser();
-    
-    if (!user?.roles || !user.roles.includes('ADMIN')) {
-      if (user?.roles?.includes('PROFESSOR')) {
-        router.push('/professor/dashboard');
-      } else if (user?.roles?.includes('RESPONSAVEL')) {
-        router.push('/responsavel/dashboard');
-      } else {
-        handleLogout();
-      }
-      return;
-    }
-    
-    setUserData(user);
   }, [router]);
 
   const onLogout = () => {

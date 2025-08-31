@@ -139,6 +139,30 @@ export function handleLogout(): void {
   window.location.href = '/';
 }
 
+export function checkUserRole(router: any, expectedRole: string): boolean {
+  if (!isAuthenticated()) {
+    router.push('/login');
+    return false;
+  }
+
+  const user = getAuthUser();
+  
+  if (!user?.roles || !user.roles.includes(expectedRole)) {
+    if (user?.roles?.includes('ADMIN')) {
+      router.push('/admin/dashboard');
+    } else if (user?.roles?.includes('PROFESSOR')) {
+      router.push('/professor/dashboard');
+    } else if (user?.roles?.includes('RESPONSAVEL')) {
+      router.push('/responsavel/dashboard');
+    } else {
+      handleLogout();
+    }
+    return false;
+  }
+  
+  return true;
+}
+
 export async function checkApiConnection(): Promise<{ success: boolean; message: string }> {
   try {
     const url = `${config.API_URL}/status`;

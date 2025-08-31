@@ -2,30 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { isAuthenticated, getAuthUser, handleLogout } from '../../utils/auth';
+import { isAuthenticated, getAuthUser, handleLogout, checkUserRole } from '../../utils/auth';
 
 export default function ResponsavelDashboard() {
   const router = useRouter();
   const [userData, setUserData] = useState<any>(null);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
-      router.push('/login');
-      return;
+    if (checkUserRole(router, 'RESPONSAVEL')) {
+      setUserData(getAuthUser());
     }
-    const user = getAuthUser();
-    if (!user?.roles || !user.roles.includes('RESPONSAVEL')) {
-      if (user?.roles?.includes('ADMIN')) {
-        router.push('/admin/dashboard');
-      } else if (user?.roles?.includes('PROFESSOR')) {
-        router.push('/professor/dashboard');
-      } else {
-        handleLogout();
-      }
-      return;
-    }
-    
-    setUserData(user);
   }, [router]);
 
   const onLogout = () => {
