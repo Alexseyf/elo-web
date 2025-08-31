@@ -5,17 +5,47 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { isAuthenticated, getAuthUser, handleLogout, checkUserRole } from '../../utils/auth';
+import { fetchTurmas, Turma, formatarNomeTurma } from '../../utils/turmas';
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [userData, setUserData] = useState<any>(null);
   const [activeSection, setActiveSection] = useState('visao-geral');
+  const [turmas, setTurmas] = useState<Turma[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (checkUserRole(router, 'ADMIN')) {
       setUserData(getAuthUser());
     }
   }, [router]);
+  
+  useEffect(() => {
+    if (activeSection === 'turmas') {
+      loadTurmas();
+    }
+  }, [activeSection]);
+  
+  const loadTurmas = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const result = await fetchTurmas();
+      
+      if (result.success && result.data) {
+        setTurmas(result.data);
+      } else {
+        setError(result.error || 'Erro ao carregar turmas');
+      }
+    } catch (err) {
+      setError('Erro inesperado ao carregar turmas');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onLogout = () => {
     handleLogout();
@@ -139,12 +169,103 @@ export default function AdminDashboard() {
           
           <section id="turmas" className={activeSection === 'turmas' ? 'block' : 'hidden'}>
             <h2 className="mb-6 text-xl font-semibold">Gerenciamento de Turmas</h2>
-            <div className="rounded-lg bg-white p-6 shadow">
-              <p className="mb-4">Crie e gerencie turmas e suas configurações.</p>
-              <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+            <div className="mb-4 flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-medium">Lista de Turmas</h3>
+                <p className="text-sm text-gray-600">Visualize e gerencie as turmas cadastradas</p>
+              </div>
+              <button 
+                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 flex items-center"
+                onClick={() => {/* Implementar navegação para formulário de criação */}}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
                 Criar Nova Turma
               </button>
             </div>
+            
+            {loading ? (
+              <div className="flex justify-center p-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
+            ) : error ? (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+                <p>{error}</p>
+                <button 
+                  onClick={loadTurmas} 
+                  className="mt-2 text-sm underline hover:text-red-800"
+                >
+                  Tentar novamente
+                </button>
+              </div>
+            ) : (
+              <>
+                {turmas.length === 0 ? (
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                    <p className="text-gray-600 mb-4">Nenhuma turma encontrada</p>
+                    <button 
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+                      onClick={() => {/* Implementar navegação para formulário de criação */}}
+                    >
+                      Criar primeira turma
+                    </button>
+                  </div>
+                ) : (
+                  <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Nome
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Professores
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Alunos
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Ações
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {turmas.map((turma) => (
+                          <tr key={turma.id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              {turma.nome}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {turma.professores.length > 0 
+                                ? turma.professores.map(p => p.usuario.nome).join(', ') 
+                                : 'Nenhum professor'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {turma.alunos.length}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <button
+                                className="text-blue-600 hover:text-blue-900 mr-3"
+                                onClick={() => {/* Implementar visualização detalhada */}}
+                              >
+                                Detalhes
+                              </button>
+                              <button
+                                className="text-indigo-600 hover:text-indigo-900 mr-3"
+                                onClick={() => {/* Implementar edição */}}
+                              >
+                                Editar
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            )}
           </section>
           
           <section id="diarios" className={activeSection === 'diarios' ? 'block' : 'hidden'}>
