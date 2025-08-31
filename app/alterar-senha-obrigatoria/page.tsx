@@ -42,17 +42,27 @@ export default function AlterarSenhaObrigatoria() {
     }
 
     try {
-      const response = await fetch(`${config.API_URL}/usuarios/${userId}/alterarSenha`, {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
+      const requestData = {
+        userId: userId ? parseInt(userId, 10) : undefined,
+        senhaAtual,
+        novaSenha
+      };
+
+      const response = await fetch(`${config.API_URL}/alterar-senha`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify({
-          senhaAtual,
-          novaSenha
-        }),
+        body: JSON.stringify(requestData),
+        signal: controller.signal
       });
-
+      
+      clearTimeout(timeoutId);
+      
       const data = await response.json();
 
       if (response.ok) {
