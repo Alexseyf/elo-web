@@ -18,6 +18,12 @@ interface Aluno {
   nome: string;
 }
 
+export interface TurmaComTotalAlunos {
+  id: number;
+  nome: string;
+  totalAlunosAtivos: number;
+}
+
 export interface Turma {
   id: number;
   nome: string;
@@ -149,4 +155,54 @@ export function formatarTurmas(turmas: Turma[]): Turma[] {
     ...turma,
     nome: formatarNomeTurma(turma.nome)
   }));
+}
+
+export async function fetchTotalAlunosPorTurma(): Promise<{
+  success: boolean;
+  data?: TurmaComTotalAlunos[];
+  error?: string;
+}> {
+  try {
+    const token = getAuthToken();
+    
+    if (!token) {
+      return {
+        success: false,
+        error: 'Usuário não autenticado'
+      };
+    }
+    
+    const response = await fetch(`${config.API_URL}/turmas/totalAlunosTurma`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return {
+        success: false,
+        error: errorData.message || `Erro ao buscar total de alunos por turma: ${response.status}`
+      };
+    }
+    
+    const turmasComTotal = await response.json();
+    
+    return {
+      success: true,
+      data: turmasComTotal.map((turma: TurmaComTotalAlunos) => ({
+        ...turma,
+        nome: formatarNomeTurma(turma.nome)
+      }))
+    };
+  } catch (error) {
+    console.error('Erro ao buscar total de alunos por turma:', error);
+    
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erro desconhecido ao buscar total de alunos por turma'
+    };
+  }
 }

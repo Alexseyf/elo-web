@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { isAuthenticated, getAuthUser, handleLogout, checkUserRole } from '../../utils/auth';
-import { fetchTurmas, Turma, formatarNomeTurma } from '../../utils/turmas';
+import { fetchTurmas, Turma, TurmaComTotalAlunos, formatarNomeTurma, fetchTotalAlunosPorTurma } from '../../utils/turmas';
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [userData, setUserData] = useState<any>(null);
   const [activeSection, setActiveSection] = useState('visao-geral');
   const [turmas, setTurmas] = useState<Turma[]>([]);
+  const [turmasComTotalAlunos, setTurmasComTotalAlunos] = useState<TurmaComTotalAlunos[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +25,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (activeSection === 'turmas') {
       loadTurmas();
+      loadTotalAlunosPorTurma();
     }
   }, [activeSection]);
   
@@ -44,6 +46,20 @@ export default function AdminDashboard() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadTotalAlunosPorTurma = async () => {
+    try {
+      const result = await fetchTotalAlunosPorTurma();
+      
+      if (result.success && result.data) {
+        setTurmasComTotalAlunos(result.data);
+      } else {
+        console.error('Erro ao carregar total de alunos:', result.error);
+      }
+    } catch (err) {
+      console.error('Erro inesperado ao carregar total de alunos:', err);
     }
   };
 
@@ -242,7 +258,7 @@ export default function AdminDashboard() {
                                 : 'Nenhum professor'}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {turma.alunos.length}
+                              {turmasComTotalAlunos.find(t => t.id === turma.id)?.totalAlunosAtivos || 0}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button
