@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import config from '../../config';
 
-export default function AlterarSenhaObrigatoria() {
+function AlterarSenhaObrigatoriaForm() {
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [error, setError] = useState('');
@@ -151,5 +151,13 @@ export default function AlterarSenhaObrigatoria() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function AlterarSenhaObrigatoria() {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <AlterarSenhaObrigatoriaForm />
+    </Suspense>
   );
 }
