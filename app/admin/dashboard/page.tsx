@@ -171,24 +171,19 @@ export default function AdminDashboard() {
       
       {/* Conteúdo principal */}
       <div className="flex-1">
-        <header className="bg-white shadow-sm p-4 lg:p-6 flex items-center justify-between">
+        <header className="bg-white shadow-sm p-4 flex items-center justify-between md:hidden">
           {/* Botão do menu em dispositivos móveis */}
           <button 
-            className="p-2 rounded-md lg:hidden focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-
-          <div className="hidden md:block text-right">
-            <p className="text-sm font-medium">{userData?.nome}</p>
-            <p className="text-xs text-gray-600">{userData?.email}</p>
-          </div>
         </header>
         
-        <main className="p-4 lg:p-8">
+        <main className="p-4 md:pt-6 lg:p-8">
           <section id="visao-geral" className={activeSection === 'visao-geral' ? 'block' : 'hidden'}>
             <h2 className="mb-4 md:mb-6 text-lg md:text-xl font-semibold">Visão Geral</h2>
             <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
