@@ -126,7 +126,10 @@ export default function AdminDashboard() {
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         } fixed inset-y-0 left-0 w-64 bg-white shadow-md z-30 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-0`}
       >
-      <SidebarHeader title="Elo Web" subtitle="Painel Administrativo" />
+      <SidebarHeader
+        onClose={() => setMobileMenuOpen(false)}
+        showCloseButton={true}
+      />
         
         <nav className="p-2">
           <ul>
@@ -159,15 +162,9 @@ export default function AdminDashboard() {
           </div>
           <button
             onClick={onLogout}
-            className="w-full rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700 lg:flex hidden"
+            className="w-full rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700"
           >
             Sair
-          </button>
-          <button
-            onClick={() => setMobileMenuOpen(false)}
-            className="w-full mt-2 rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 lg:hidden"
-          >
-            Fechar Menu
           </button>
         </div>
       </aside>
@@ -189,17 +186,9 @@ export default function AdminDashboard() {
             Painel Administrativo - Elo Web
           </h1>
 
-          <div className="flex items-center space-x-2 md:space-x-4">
-            <div className="hidden md:block text-right">
-              <p className="text-sm font-medium">{userData?.nome}</p>
-              <p className="text-xs text-gray-600">{userData?.email}</p>
-            </div>
-            <button
-              onClick={onLogout}
-              className="rounded-md bg-red-600 px-2 py-1 md:px-3 md:py-2 text-xs md:text-sm text-white hover:bg-red-700"
-            >
-              Sair
-            </button>
+          <div className="hidden md:block text-right">
+            <p className="text-sm font-medium">{userData?.nome}</p>
+            <p className="text-xs text-gray-600">{userData?.email}</p>
           </div>
         </header>
         
