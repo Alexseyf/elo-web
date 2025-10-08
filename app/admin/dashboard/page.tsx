@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { isAuthenticated, getAuthUser, handleLogout, checkUserRole } from '../../utils/auth';
+import { SidebarHeader } from '../../components';
 import { fetchTurmas, Turma, TurmaComTotalAlunos, formatarNomeTurma, fetchTotalAlunosPorTurma } from '../../utils/turmas';
 import { fetchUsuariosAtivos, Usuario, UsuariosPorRole } from '../../utils/usuarios';
 
@@ -125,19 +126,7 @@ export default function AdminDashboard() {
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         } fixed inset-y-0 left-0 w-64 bg-white shadow-md z-30 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-0`}
       >
-      <div className="p-4 border-b flex items-center">
-        <Image
-          src="/logo.png"
-          alt="Elo Escola"
-          width={60}
-          height={60}
-          className="mr-3"
-        />
-        <div>
-          <h2 className="text-xl font-bold">Elo Escola</h2>
-          <p className="text-sm text-gray-600">Painel Administrativo</p>
-        </div>
-      </div>
+      <SidebarHeader title="Elo Web" subtitle="Painel Administrativo" />
         
         <nav className="p-2">
           <ul>
