@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { isAuthenticated, getAuthUser, handleLogout, checkUserRole } from '../../utils/auth';
-import { SidebarHeader } from '../../components';
+import { SidebarHeader, UsersTable } from '../../components';
 import { fetchTurmas, Turma, TurmaComTotalAlunos, formatarNomeTurma, fetchTotalAlunosPorTurma } from '../../utils/turmas';
 import { fetchUsuariosAtivos, Usuario, UsuariosPorRole } from '../../utils/usuarios';
 
@@ -181,10 +181,6 @@ export default function AdminDashboard() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          
-          <h1 className="text-lg lg:text-xl font-bold text-gray-800">
-            Painel Administrativo - Elo Web
-          </h1>
 
           <div className="hidden md:block text-right">
             <p className="text-sm font-medium">{userData?.nome}</p>
@@ -218,22 +214,24 @@ export default function AdminDashboard() {
               </div>
             </div>
           </section>
+
+          {/* Lista usuários do sistema - UsersTable.tsx */}
           <section id="usuarios" className={activeSection === 'usuarios' ? 'block' : 'hidden'}>
-            <h2 className="mb-6 text-xl font-semibold">Gerenciamento de Usuários</h2>
+            <h2 className="mb-4 md:mb-6 text-lg md:text-xl font-semibold">Gerenciamento de Usuários</h2>
             
-            <div className="mb-4 flex justify-between items-center">
+            <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
               <div>
-                <h3 className="text-lg font-medium">Lista de Usuários</h3>
-                <p className="text-sm text-gray-600">Visualize e gerencie os usuários do sistema</p>
+                <h3 className="text-base md:text-lg font-medium">Lista de Usuários</h3>
+                <p className="text-xs md:text-sm text-gray-600">Visualize e gerencie os usuários do sistema</p>
               </div>
               <button 
-                className="rounded bg-blue-600 px-3 py-1.5 sm:px-4 sm:py-2 text-white hover:bg-blue-700 flex items-center text-xs sm:text-sm"
+                className="rounded bg-blue-600 px-3 py-1.5 sm:px-4 sm:py-2 text-white hover:bg-blue-700 flex items-center text-xs sm:text-sm self-start sm:self-auto"
                 onClick={() => {/* Implementar navegação para formulário de criação */}}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                <span className="hidden sm:inline">Adicionar</span> Usuário
+                <span>Adicionar Usuário</span>
               </button>
             </div>
             
@@ -243,10 +241,10 @@ export default function AdminDashboard() {
               </div>
             ) : errorUsuarios ? (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-                <p>{errorUsuarios}</p>
+                <p className="text-sm">{errorUsuarios}</p>
                 <button 
                   onClick={loadUsuarios} 
-                  className="mt-2 text-sm underline hover:text-red-800"
+                  className="mt-2 text-xs sm:text-sm underline hover:text-red-800"
                 >
                   Tentar novamente
                 </button>
@@ -256,190 +254,31 @@ export default function AdminDashboard() {
                 {usuarios && (
                   <div className="space-y-6">
                     {/* Administradores */}
-                    <div className="bg-white shadow-md rounded-lg overflow-hidden overflow-x-auto">
-                      <div className="bg-gray-100 px-6 py-3 border-b">
-                        <h3 className="font-semibold text-gray-700">Administradores ({usuarios.ADMIN.length})</h3>
-                      </div>
-                      {usuarios.ADMIN.length === 0 ? (
-                        <div className="p-6 text-center text-gray-500">
-                          Nenhum administrador encontrado
-                        </div>
-                      ) : (
-                        <table className="min-w-full divide-y divide-gray-200">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Nome
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Ações
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {usuarios.ADMIN.map((usuario) => (
-                              <tr key={usuario.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {usuario.nome}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {usuario.email}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                  {usuario.isAtivo ? (
-                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                      Ativo
-                                    </span>
-                                  ) : (
-                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                      Inativo
-                                    </span>
-                                  )}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                  <button
-                                    className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-2 py-1 rounded text-xs sm:text-sm"
-                                    onClick={() => {/* Implementar edição */}}
-                                  >
-                                    Editar
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      )}
-                    </div>
+                    <UsersTable 
+                      title="Administradores"
+                      users={usuarios.ADMIN}
+                      loading={false}
+                      error={null}
+                      onRetry={loadUsuarios}
+                    />
                     
                     {/* Professores */}
-                    <div className="bg-white shadow-md rounded-lg overflow-hidden overflow-x-auto">
-                      <div className="bg-gray-100 px-6 py-3 border-b">
-                        <h3 className="font-semibold text-gray-700">Professores ({usuarios.PROFESSOR.length})</h3>
-                      </div>
-                      {usuarios.PROFESSOR.length === 0 ? (
-                        <div className="p-6 text-center text-gray-500">
-                          Nenhum professor encontrado
-                        </div>
-                      ) : (
-                        <table className="min-w-full divide-y divide-gray-200">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Nome
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Ações
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {usuarios.PROFESSOR.map((usuario) => (
-                              <tr key={usuario.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {usuario.nome}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {usuario.email}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                  {usuario.isAtivo ? (
-                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                      Ativo
-                                    </span>
-                                  ) : (
-                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                      Inativo
-                                    </span>
-                                  )}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                  <button
-                                    className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-2 py-1 rounded text-xs sm:text-sm"
-                                    onClick={() => {/* Implementar edição */}}
-                                  >
-                                    Editar
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      )}
-                    </div>
+                    <UsersTable 
+                      title="Professores"
+                      users={usuarios.PROFESSOR}
+                      loading={false}
+                      error={null}
+                      onRetry={loadUsuarios}
+                    />
                     
                     {/* Responsáveis */}
-                    <div className="bg-white shadow-md rounded-lg overflow-hidden overflow-x-auto">
-                      <div className="bg-gray-100 px-6 py-3 border-b">
-                        <h3 className="font-semibold text-gray-700">Responsáveis ({usuarios.RESPONSAVEL.length})</h3>
-                      </div>
-                      {usuarios.RESPONSAVEL.length === 0 ? (
-                        <div className="p-6 text-center text-gray-500">
-                          Nenhum responsável encontrado
-                        </div>
-                      ) : (
-                        <table className="min-w-full divide-y divide-gray-200">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Nome
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
-                              </th>
-                              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Ações
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {usuarios.RESPONSAVEL.map((usuario) => (
-                              <tr key={usuario.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {usuario.nome}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {usuario.email}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                  {usuario.isAtivo ? (
-                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                      Ativo
-                                    </span>
-                                  ) : (
-                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                      Inativo
-                                    </span>
-                                  )}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                  <button
-                                    className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-2 py-1 rounded text-xs sm:text-sm"
-                                    onClick={() => {/* Implementar edição */}}
-                                  >
-                                    Editar
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      )}
-                    </div>
+                    <UsersTable 
+                      title="Responsáveis"
+                      users={usuarios.RESPONSAVEL}
+                      loading={false}
+                      error={null}
+                      onRetry={loadUsuarios}
+                    />
                   </div>
                 )}
               </>
