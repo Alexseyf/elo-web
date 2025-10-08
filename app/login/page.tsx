@@ -70,7 +70,7 @@ export default function Login() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-8 shadow-lg">
-        <div className="mb-6 flex justify-center">
+        <div className="mb-2 flex justify-center">
           <Image
             src="/logo.png"
             alt="Elo Escola"
@@ -123,6 +123,12 @@ export default function Login() {
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
+          
+          <div className="mt-4 text-center">
+            <a href="#" className="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+              Esqueceu a senha?
+            </a>
+          </div>
         </form>
         
         {/* <div className="mt-6 pt-4 border-t border-gray-200">
