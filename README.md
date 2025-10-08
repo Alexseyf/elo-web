@@ -10,11 +10,18 @@ O projeto é desenvolvido com Next.js, utilizando React com TypeScript e Tailwin
 
 ```
 ├── app/
-│   ├── admin/            # Painel administrativo
-│   ├── professor/        # Painel do professor
-│   ├── login/            # Página de login
-│   └── utils/            # Utilitários (autenticação, etc.)
-├── public/               # Arquivos estáticos
+│   ├── admin/                # Painel administrativo
+│   ├── alterar-senha-obrigatoria/  # Página para alteração obrigatória de senha
+│   ├── components/           # Componentes reutilizáveis
+│   │   ├── SidebarHeader.tsx # Componente de cabeçalho da barra lateral
+│   │   ├── UsersTable.tsx    # Componente de tabela de usuários
+│   │   └── index.ts          # Arquivo barrel para exportações
+│   ├── dashboard/            # Dashboard principal
+│   ├── login/                # Página de login
+│   ├── professor/            # Painel do professor
+│   ├── responsavel/          # Painel do responsável
+│   └── utils/                # Utilitários (autenticação, turmas, usuários, etc.)
+├── public/                   # Arquivos estáticos
 └── ...
 ```
 
@@ -47,6 +54,7 @@ O sistema utiliza um mecanismo de autenticação baseado em roles:
 
 - `ADMIN`: Acesso total ao sistema
 - `PROFESSOR`: Acesso ao painel do professor e funcionalidades específicas
+- `RESPONSÁVEL`: Acesso às informações do diário do aluno, cronograma anual e atividades pedagógicas.
 
 ## Instalação e Configuração
 
