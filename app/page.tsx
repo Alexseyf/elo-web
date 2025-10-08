@@ -135,7 +135,7 @@ export default function Home() {
         />
         
         <div className="text-center sm:text-left">
-          <h1 className="text-2xl font-bold mb-4">Bem-vindo ao ELO Desktop</h1>
+          <h1 className="text-2xl font-bold mb-4">Bem-vindo ao ELO Escola</h1>
           <p className="mb-6">Aguarde enquanto você é redirecionado...</p>
           
           <div className="flex gap-4 justify-center sm:justify-start">
@@ -149,7 +149,7 @@ export default function Home() {
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <p className="text-sm text-gray-500">© {new Date().getFullYear()} ELO Desktop</p>
+        <p className="text-sm text-gray-500">© {new Date().getFullYear()} ELO Escola</p>
       </footer>
     </div>
   );

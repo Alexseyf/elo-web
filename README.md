@@ -60,7 +60,7 @@ O sistema utiliza um mecanismo de autenticação baseado em roles:
 1. Clone o repositório:
 ```bash
 git clone [url-do-repositorio]
-cd elo-desktop
+cd elo-web
 ```
 
 2. Instale as dependências:
