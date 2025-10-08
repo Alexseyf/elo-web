@@ -19,6 +19,7 @@ export default function AdminDashboard() {
   const [errorUsuarios, setErrorUsuarios] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (checkUserRole(router, 'ADMIN')) {
@@ -109,9 +110,21 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <aside className="w-64 bg-white shadow-md">
-
+    <div className="flex min-h-screen bg-gray-50 relative">
+      {/* Overlay para fechar o menu em dispositivos móveis */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-gray-800 bg-opacity-50 z-20 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        ></div>
+      )}
+      
+      {/* Menu lateral */}
+      <aside 
+        className={`${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } fixed inset-y-0 left-0 w-64 bg-white shadow-md z-30 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-0`}
+      >
       <div className="p-4 border-b flex items-center">
         <Image
           src="/logo.png"
@@ -132,7 +145,11 @@ export default function AdminDashboard() {
               <li key={item.id} className="mb-1">
                 <a
                   href={item.href}
-                  onClick={() => setActiveSection(item.id)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveSection(item.id);
+                    setMobileMenuOpen(false);
+                  }}
                   className={`block rounded-md px-4 py-2 text-sm transition-colors ${
                     activeSection === item.id
                       ? 'bg-blue-100 text-blue-700 font-medium'
@@ -146,44 +163,78 @@ export default function AdminDashboard() {
           </ul>
         </nav>
         
-        <div className="absolute bottom-0 w-64 border-t p-4">
+        <div className="lg:absolute lg:bottom-0 w-full border-t p-4 mt-6 lg:mt-0">
           <div className="mb-2">
             <p className="font-medium text-sm">{userData.nome}</p>
             <p className="text-xs text-gray-600">{userData.email}</p>
           </div>
           <button
             onClick={onLogout}
-            className="w-full rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700"
+            className="w-full rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700 lg:flex hidden"
           >
             Sair
           </button>
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="w-full mt-2 rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 lg:hidden"
+          >
+            Fechar Menu
+          </button>
         </div>
       </aside>
-      <div className="flex-1 p-8">
-        <header className="mb-8 flex items-center justify-between">
+      
+      {/* Conteúdo principal */}
+      <div className="flex-1">
+        <header className="bg-white shadow-sm p-4 lg:p-6 flex items-center justify-between">
+          {/* Botão do menu em dispositivos móveis */}
+          <button 
+            className="p-2 rounded-md lg:hidden focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          
+          <h1 className="text-lg lg:text-xl font-bold text-gray-800">
+            Painel Administrativo - Elo Web
+          </h1>
+
+          <div className="flex items-center space-x-2 md:space-x-4">
+            <div className="hidden md:block text-right">
+              <p className="text-sm font-medium">{userData?.nome}</p>
+              <p className="text-xs text-gray-600">{userData?.email}</p>
+            </div>
+            <button
+              onClick={onLogout}
+              className="rounded-md bg-red-600 px-2 py-1 md:px-3 md:py-2 text-xs md:text-sm text-white hover:bg-red-700"
+            >
+              Sair
+            </button>
+          </div>
         </header>
         
-        <main>
+        <main className="p-4 lg:p-8">
           <section id="visao-geral" className={activeSection === 'visao-geral' ? 'block' : 'hidden'}>
-            <h2 className="mb-6 text-xl font-semibold">Visão Geral</h2>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <div className="rounded-lg bg-white p-6 shadow">
-                <h3 className="mb-4 text-lg font-semibold">Bem-vindo ao Dashboard</h3>
-                <p className="text-gray-600">
+            <h2 className="mb-4 md:mb-6 text-lg md:text-xl font-semibold">Visão Geral</h2>
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="rounded-lg bg-white p-4 md:p-6 shadow">
+                <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">Bem-vindo ao Dashboard</h3>
+                <p className="text-gray-600 text-sm md:text-base">
                   Aqui você pode gerenciar todos os aspectos do sistema.
                 </p>
               </div>
               
-              <div className="rounded-lg bg-white p-6 shadow">
-                <h3 className="mb-4 text-lg font-semibold">Atividades Recentes</h3>
-                <p className="text-gray-600">
+              <div className="rounded-lg bg-white p-4 md:p-6 shadow">
+                <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">Atividades Recentes</h3>
+                <p className="text-gray-600 text-sm md:text-base">
                   Visualize as últimas atividades do sistema.
                 </p>
               </div>
               
-              <div className="rounded-lg bg-white p-6 shadow">
-                <h3 className="mb-4 text-lg font-semibold">Estatísticas</h3>
-                <p className="text-gray-600">
+              <div className="rounded-lg bg-white p-4 md:p-6 shadow">
+                <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">Estatísticas</h3>
+                <p className="text-gray-600 text-sm md:text-base">
                   Resumo dos principais números do sistema.
                 </p>
               </div>
@@ -198,13 +249,13 @@ export default function AdminDashboard() {
                 <p className="text-sm text-gray-600">Visualize e gerencie os usuários do sistema</p>
               </div>
               <button 
-                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 flex items-center"
+                className="rounded bg-blue-600 px-3 py-1.5 sm:px-4 sm:py-2 text-white hover:bg-blue-700 flex items-center text-xs sm:text-sm"
                 onClick={() => {/* Implementar navegação para formulário de criação */}}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                Adicionar Usuário
+                <span className="hidden sm:inline">Adicionar</span> Usuário
               </button>
             </div>
             
@@ -227,7 +278,7 @@ export default function AdminDashboard() {
                 {usuarios && (
                   <div className="space-y-6">
                     {/* Administradores */}
-                    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div className="bg-white shadow-md rounded-lg overflow-hidden overflow-x-auto">
                       <div className="bg-gray-100 px-6 py-3 border-b">
                         <h3 className="font-semibold text-gray-700">Administradores ({usuarios.ADMIN.length})</h3>
                       </div>
@@ -275,7 +326,7 @@ export default function AdminDashboard() {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                   <button
-                                    className="text-indigo-600 hover:text-indigo-900 mr-3"
+                                    className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-2 py-1 rounded text-xs sm:text-sm"
                                     onClick={() => {/* Implementar edição */}}
                                   >
                                     Editar
@@ -289,7 +340,7 @@ export default function AdminDashboard() {
                     </div>
                     
                     {/* Professores */}
-                    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div className="bg-white shadow-md rounded-lg overflow-hidden overflow-x-auto">
                       <div className="bg-gray-100 px-6 py-3 border-b">
                         <h3 className="font-semibold text-gray-700">Professores ({usuarios.PROFESSOR.length})</h3>
                       </div>
@@ -337,7 +388,7 @@ export default function AdminDashboard() {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                   <button
-                                    className="text-indigo-600 hover:text-indigo-900 mr-3"
+                                    className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-2 py-1 rounded text-xs sm:text-sm"
                                     onClick={() => {/* Implementar edição */}}
                                   >
                                     Editar
@@ -351,7 +402,7 @@ export default function AdminDashboard() {
                     </div>
                     
                     {/* Responsáveis */}
-                    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div className="bg-white shadow-md rounded-lg overflow-hidden overflow-x-auto">
                       <div className="bg-gray-100 px-6 py-3 border-b">
                         <h3 className="font-semibold text-gray-700">Responsáveis ({usuarios.RESPONSAVEL.length})</h3>
                       </div>
@@ -399,7 +450,7 @@ export default function AdminDashboard() {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                   <button
-                                    className="text-indigo-600 hover:text-indigo-900 mr-3"
+                                    className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-2 py-1 rounded text-xs sm:text-sm"
                                     onClick={() => {/* Implementar edição */}}
                                   >
                                     Editar
@@ -435,13 +486,13 @@ export default function AdminDashboard() {
                 <p className="text-sm text-gray-600">Visualize e gerencie as turmas cadastradas</p>
               </div>
               <button 
-                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 flex items-center"
+                className="rounded bg-blue-600 px-3 py-1.5 sm:px-4 sm:py-2 text-white hover:bg-blue-700 flex items-center text-xs sm:text-sm"
                 onClick={() => {/* Implementar navegação para formulário de criação */}}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                Criar Nova Turma
+                <span className="hidden sm:inline">Criar Nova</span> Turma
               </button>
             </div>
             
@@ -472,7 +523,7 @@ export default function AdminDashboard() {
                     </button>
                   </div>
                 ) : (
-                  <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                  <div className="bg-white shadow-md rounded-lg overflow-hidden overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50">
                         <tr>
@@ -505,18 +556,20 @@ export default function AdminDashboard() {
                               {turmasComTotalAlunos.find(t => t.id === turma.id)?.totalAlunosAtivos || 0}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <button
-                                className="text-blue-600 hover:text-blue-900 mr-3"
-                                onClick={() => {/* Implementar visualização detalhada */}}
-                              >
-                                Detalhes
-                              </button>
-                              <button
-                                className="text-indigo-600 hover:text-indigo-900 mr-3"
-                                onClick={() => {/* Implementar edição */}}
-                              >
-                                Editar
-                              </button>
+                              <div className="flex flex-col sm:flex-row justify-end gap-2">
+                                <button
+                                  className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-2 py-1 rounded text-xs"
+                                  onClick={() => {/* Implementar visualização detalhada */}}
+                                >
+                                  Detalhes
+                                </button>
+                                <button
+                                  className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-2 py-1 rounded text-xs"
+                                  onClick={() => {/* Implementar edição */}}
+                                >
+                                  Editar
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}
