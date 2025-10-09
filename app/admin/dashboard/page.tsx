@@ -22,9 +22,27 @@ export default function AdminDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
+  const sidebarItems = [
+    { id: 'visao-geral', label: 'Visão Geral', href: '#visao-geral' },
+    { id: 'usuarios', label: 'Usuários', href: '#usuarios' },
+    { id: 'alunos', label: 'Alunos', href: '#alunos' },
+    { id: 'turmas', label: 'Turmas', href: '#turmas' },
+    { id: 'diarios', label: 'Diários', href: '#diarios' },
+    { id: 'atividades', label: 'Atividades Pedagógicas', href: '#atividades' },
+    { id: 'calendario', label: 'Calendário', href: '#calendario' },
+    { id: 'cronograma', label: 'Cronograma Anual', href: '#cronograma' },
+  ];
+
   useEffect(() => {
     if (checkUserRole(router, 'ADMIN')) {
       setUserData(getAuthUser());
+      
+      // Verifica se há um parâmetro de seção na URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const sectionParam = urlParams.get('section');
+      if (sectionParam && sidebarItems.some(item => item.id === sectionParam)) {
+        setActiveSection(sectionParam);
+      }
     }
   }, [router]);
   
@@ -98,17 +116,6 @@ export default function AdminDashboard() {
   if (!userData) {
     return <div className="flex min-h-screen items-center justify-center">Carregando...</div>;
   }
-
-  const sidebarItems = [
-    { id: 'visao-geral', label: 'Visão Geral', href: '#visao-geral' },
-    { id: 'usuarios', label: 'Usuários', href: '#usuarios' },
-    { id: 'alunos', label: 'Alunos', href: '#alunos' },
-    { id: 'turmas', label: 'Turmas', href: '#turmas' },
-    { id: 'diarios', label: 'Diários', href: '#diarios' },
-    { id: 'atividades', label: 'Atividades Pedagógicas', href: '#atividades' },
-    { id: 'calendario', label: 'Calendário', href: '#calendario' },
-    { id: 'cronograma', label: 'Cronograma Anual', href: '#cronograma' },
-  ];
 
   return (
     <div className="flex min-h-screen bg-gray-50 relative">
@@ -221,7 +228,7 @@ export default function AdminDashboard() {
               </div>
               <button 
                 className="rounded bg-blue-600 px-3 py-1.5 sm:px-4 sm:py-2 text-white hover:bg-blue-700 flex items-center text-xs sm:text-sm self-start sm:self-auto"
-                onClick={() => {/* Implementar navegação para formulário de criação */}}
+                onClick={() => router.push('/admin/usuarios/cadastrar')}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
