@@ -76,6 +76,15 @@ export default function CadastrarAluno() {
     if (!formData.dataNasc) {
       newErrors.dataNasc = 'Data de nascimento é obrigatória';
       isValid = false;
+    } else {
+      const dataNasc = new Date(formData.dataNasc);
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      
+      if (dataNasc > hoje) {
+        newErrors.dataNasc = 'Data de nascimento não pode ser uma data futura';
+        isValid = false;
+      }
     }
     
     if (!formData.turmaId) {
@@ -330,6 +339,7 @@ export default function CadastrarAluno() {
                     name="dataNasc"
                     value={formData.dataNasc}
                     onChange={handleInputChange}
+                    max={new Date().toISOString().split('T')[0]}
                     className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 
                       ${errors.dataNasc ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}`}
                   />
