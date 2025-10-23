@@ -32,6 +32,26 @@ export interface Turma {
   alunos: Aluno[];
 }
 
+// Função simplificada para buscar turmas para uso em formulários
+export async function getTurmas(): Promise<{id: number; nome: string}[]> {
+  try {
+    const result = await fetchTurmas();
+    
+    if (!result.success || !result.data) {
+      console.error('Erro ao buscar turmas:', result.error);
+      return [];
+    }
+    
+    return result.data.map(turma => ({
+      id: turma.id,
+      nome: turma.nome
+    }));
+  } catch (error) {
+    console.error('Erro ao buscar turmas:', error);
+    return [];
+  }
+}
+
 export async function fetchTurmas(): Promise<{ 
   success: boolean; 
   data?: Turma[];

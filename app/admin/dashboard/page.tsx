@@ -291,7 +291,10 @@ export default function AdminDashboard() {
             <h2 className="mb-6 text-xl font-semibold">Gerenciamento de Alunos</h2>
             <div className="rounded-lg bg-white p-6 shadow">
               <p className="mb-4">Gerencie os alunos cadastrados no sistema.</p>
-              <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+              <button 
+                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                onClick={() => router.push('/admin/alunos/cadastrar')}
+              >
                 Adicionar Aluno
               </button>
             </div>
