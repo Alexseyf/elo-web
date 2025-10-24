@@ -87,7 +87,7 @@ export default function CadastrarAluno() {
       }
     }
     
-    if (!formData.turmaId) {
+    if (!formData.turmaId || parseInt(formData.turmaId as unknown as string, 10) <= 0) {
       newErrors.turmaId = 'Turma é obrigatória';
       isValid = false;
     }
@@ -153,6 +153,18 @@ export default function CadastrarAluno() {
         mensalidadeNumerica = parseFloat(valorLimpo);
       }
       
+      const dataNascimento = new Date(formData.dataNasc);
+      const dataFormatada = new Date(
+        dataNascimento.getFullYear(),
+        dataNascimento.getMonth(),
+        dataNascimento.getDate()
+      ).toISOString();
+
+      const turmaIdNumerico = parseInt(formData.turmaId as unknown as string, 10);
+      if (isNaN(turmaIdNumerico)) {
+        throw new Error('ID da turma inválido');
+      }
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/alunos`, {
         method: 'POST',
         headers: {
@@ -160,9 +172,9 @@ export default function CadastrarAluno() {
           'Authorization': `Bearer ${authToken}`
         },
         body: JSON.stringify({
-          nome: formData.nome,
-          dataNasc: formData.dataNasc,
-          turmaId: parseInt(formData.turmaId as unknown as string),
+          nome: formData.nome.trim(),
+          dataNasc: dataFormatada,
+          turmaId: turmaIdNumerico,
           isAtivo: true,
           mensalidade: mensalidadeNumerica
         })

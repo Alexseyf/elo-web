@@ -53,6 +53,7 @@ export async function handleLogin(credentials: LoginCredentials): Promise<LoginR
         localStorage.setItem('@auth_token', data.token);
         localStorage.setItem('@user_id', data.id.toString());
         localStorage.setItem('@user_data', JSON.stringify(data));
+        localStorage.setItem('role', data.roles[0]);
       }
       
       return {
@@ -135,8 +136,16 @@ export function handleLogout(): void {
   localStorage.removeItem('@auth_token');
   localStorage.removeItem('@user_id');
   localStorage.removeItem('@user_data');
-  
-  window.location.href = '/';
+  localStorage.removeItem('role');
+  window.location.href = '/login';
+}
+
+export function handleAuthError(response: Response): boolean {
+  if (response.status === 401) {
+    handleLogout();
+    return true;
+  }
+  return false;
 }
 
 export function checkUserRole(router: any, expectedRole: string): boolean {

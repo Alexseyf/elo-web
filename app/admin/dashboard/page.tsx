@@ -309,7 +309,7 @@ export default function AdminDashboard() {
               </div>
               <button 
                 className="rounded bg-blue-600 px-3 py-1.5 sm:px-4 sm:py-2 text-white hover:bg-blue-700 flex items-center text-xs sm:text-sm"
-                onClick={() => {/* Implementar navegação para formulário de criação */}}
+                onClick={() => router.push('/admin/turmas/cadastrar')}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -339,7 +339,7 @@ export default function AdminDashboard() {
                     <p className="text-gray-600 mb-4">Nenhuma turma encontrada</p>
                     <button 
                       className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-                      onClick={() => {/* Implementar navegação para formulário de criação */}}
+                      onClick={() => router.push('/admin/turmas/cadastrar')}
                     >
                       Criar primeira turma
                     </button>

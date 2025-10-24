@@ -1,5 +1,5 @@
 import config from '../../config';
-import { getAuthToken } from './auth';
+import { getAuthToken, handleAuthError } from './auth';
 
 interface Usuario {
   id: number;
@@ -18,6 +18,19 @@ interface Aluno {
   nome: string;
 }
 
+export enum TURMA {
+  BERCARIO2 = 'BERCARIO2',
+  MATERNAL1 = 'MATERNAL1',
+  MATERNAL2 = 'MATERNAL2',
+  PRE1 = 'PRE1',
+  PRE2 = 'PRE2',
+  TURNOINVERSO = 'TURNOINVERSO'
+}
+
+export interface DadosTurma {
+  nome: TURMA;
+}
+
 export interface TurmaComTotalAlunos {
   id: number;
   nome: string;
@@ -32,7 +45,6 @@ export interface Turma {
   alunos: Aluno[];
 }
 
-// Função simplificada para buscar turmas para uso em formulários
 export async function getTurmas(): Promise<{id: number; nome: string}[]> {
   try {
     const result = await fetchTurmas();
@@ -156,7 +168,6 @@ export function formatarNomeTurma(nomeTurma: string): string {
   const turmaUpperCase = nomeTurma.toUpperCase();
 
   const mapeamentoTurmas: Record<string, string> = {
-    'BERCARIO1': 'Berçário 1',
     'BERCARIO2': 'Berçário 2',
     'MATERNAL1': 'Maternal 1',
     'MATERNAL2': 'Maternal 2',
@@ -166,6 +177,21 @@ export function formatarNomeTurma(nomeTurma: string): string {
   };
 
   return mapeamentoTurmas[turmaUpperCase] || nomeTurma;
+}
+
+export function converterNomeParaEnum(nomeFormatado: string): TURMA | null {
+  const mapeamentoInverso: Record<string, TURMA> = {
+    'Berçário 2': TURMA.BERCARIO2,
+    'Maternal 1': TURMA.MATERNAL1,
+    'Maternal 2': TURMA.MATERNAL2,
+    'Pré 1': TURMA.PRE1,
+    'Pré 2': TURMA.PRE2,
+    'Turno Inverso': TURMA.TURNOINVERSO
+  };
+
+  return mapeamentoInverso[nomeFormatado] || 
+         (Object.values(TURMA).includes(nomeFormatado.toUpperCase() as TURMA) ? 
+          nomeFormatado.toUpperCase() as TURMA : null);
 }
 
 export function formatarTurmas(turmas: Turma[]): Turma[] {
@@ -225,4 +251,100 @@ export async function fetchTotalAlunosPorTurma(): Promise<{
       error: error instanceof Error ? error.message : 'Erro desconhecido ao buscar total de alunos por turma'
     };
   }
+}
+
+export async function cadastrarTurma(dadosTurma: DadosTurma): Promise<{
+  success: boolean;
+  data?: Turma;
+  error?: string;
+}> {
+  try {
+    const token = getAuthToken();
+    const role = localStorage.getItem('role');
+    
+    if (role !== 'ADMIN') {
+      return {
+        success: false,
+        error: 'Acesso negado: apenas administradores podem cadastrar turmas'
+      };
+    }
+    
+    if (!token) {
+      return {
+        success: false,
+        error: 'Usuário não autenticado'
+      };
+    }
+
+    if (!dadosTurma.nome) {
+      return {
+        success: false,
+        error: 'Nome da turma é obrigatório'
+      };
+    }
+
+    if (!Object.values(TURMA).includes(dadosTurma.nome)) {
+      return {
+        success: false,
+        error: 'Nome da turma deve ser um valor válido: ' + Object.values(TURMA).join(', ')
+      };
+    }
+    
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turmas`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dadosTurma)
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      
+      if (handleAuthError(response)) {
+        return {
+          success: false,
+          error: 'Sessão expirada. Por favor, faça login novamente.'
+        };
+      }
+      
+      return {
+        success: false,
+        error: errorData.message || `Erro ao cadastrar turma: ${response.status}`
+      };
+    }
+    
+    const novaTurma = await response.json();
+    
+    return {
+      success: true,
+      data: novaTurma
+    };
+  } catch (error) {
+    console.error('Erro ao cadastrar turma:', error);
+    
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erro desconhecido ao cadastrar turma'
+    };
+  }
+}
+
+
+export async function cadastrarTurmaComNomeFormatado(nomeFormatado: string): Promise<{
+  success: boolean;
+  data?: Turma;
+  error?: string;
+}> {
+  const enumTurma = converterNomeParaEnum(nomeFormatado);
+  
+  if (!enumTurma) {
+    return {
+      success: false,
+      error: `Nome de turma inválido: ${nomeFormatado}. Valores válidos: ${Object.values(TURMA).map(formatarNomeTurma).join(', ')}`
+    };
+  }
+
+  return cadastrarTurma({ nome: enumTurma });
 }
