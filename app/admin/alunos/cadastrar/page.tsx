@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { SidebarHeader } from '../../../components';
 import { checkUserRole, getAuthUser, handleLogout } from '../../../utils/auth';
 import { getTurmas } from '../../../utils/turmas';
+import { createAluno, type CreateAlunoData, validateAlunoData } from '../../../utils/alunos';
 
 interface Turma {
   id: number;
@@ -53,106 +54,34 @@ export default function CadastrarAluno() {
     }
   };
 
-  const validateForm = () => {
-    let isValid = true;
-    const newErrors = {
-      nome: '',
-      dataNasc: '',
-      turmaId: '',
-      mensalidade: ''
-    };
-    
-    if (!formData.nome.trim()) {
-      newErrors.nome = 'Nome é obrigatório';
-      isValid = false;
-    } else if (formData.nome.trim().length < 3) {
-      newErrors.nome = 'Nome deve ter pelo menos 3 caracteres';
-      isValid = false;
-    } else if (formData.nome.trim().length > 60) {
-      newErrors.nome = 'Nome deve ter no máximo 60 caracteres';
-      isValid = false;
-    }
-    
-    if (!formData.dataNasc) {
-      newErrors.dataNasc = 'Data de nascimento é obrigatória';
-      isValid = false;
-    } else {
-      const dataNasc = new Date(formData.dataNasc);
-      const hoje = new Date();
-      hoje.setHours(0, 0, 0, 0);
-      
-      if (dataNasc > hoje) {
-        newErrors.dataNasc = 'Data de nascimento não pode ser uma data futura';
-        isValid = false;
-      }
-    }
-    
-    if (!formData.turmaId || parseInt(formData.turmaId as unknown as string, 10) <= 0) {
-      newErrors.turmaId = 'Turma é obrigatória';
-      isValid = false;
-    }
-    
-    if (formData.mensalidade) {
-      const valorLimpo = formData.mensalidade.replace(/\./g, '').replace(',', '.');
-      const valorNumerico = parseFloat(valorLimpo);
-      
-      if (isNaN(valorNumerico) || valorNumerico <= 0) {
-        newErrors.mensalidade = 'Mensalidade deve ser um valor positivo';
-        isValid = false;
-      }
-    }
-    
-    setErrors(newErrors);
-    return isValid;
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const digitsOnly = value.replace(/\D/g, '');
-
-    if (digitsOnly === '') {
-      setFormData({ ...formData, [name]: '' });
-      return;
-    }
-
-    const numValue = parseInt(digitsOnly, 10) / 100;
-    const formatter = new Intl.NumberFormat('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
+    const numValue = digitsOnly ? parseInt(digitsOnly, 10) / 100 : 0;
+    const formattedValue = numValue ? 
+      new Intl.NumberFormat('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(numValue) : '';
     
-    const formattedValue = formatter.format(numValue);
-    
-    setFormData({ ...formData, [name]: formattedValue });
+    setFormData(prev => ({ ...prev, [name]: formattedValue }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
-      return;
-    }
-    
-    setIsLoading(true);
-    setMensagem(null);
-    
     try {
-      const authToken = localStorage.getItem('@auth_token');
-      if (!authToken) {
-        throw new Error('Token não encontrado');
-      }
-      
-      let mensalidadeNumerica = undefined;
-      if (formData.mensalidade) {
-        const valorLimpo = formData.mensalidade.replace(/\./g, '').replace(',', '.');
-        mensalidadeNumerica = parseFloat(valorLimpo);
-      }
-      
+      const mensalidadeNumerica = formData.mensalidade ? 
+        parseFloat(formData.mensalidade.replace(/\./g, '').replace(',', '.')) : 
+        undefined;
+
       const dataNascimento = new Date(formData.dataNasc);
       const dataFormatada = new Date(
         dataNascimento.getFullYear(),
@@ -160,44 +89,54 @@ export default function CadastrarAluno() {
         dataNascimento.getDate()
       ).toISOString();
 
-      const turmaIdNumerico = parseInt(formData.turmaId as unknown as string, 10);
-      if (isNaN(turmaIdNumerico)) {
-        throw new Error('ID da turma inválido');
+      const alunoData: CreateAlunoData = {
+        nome: formData.nome.trim(),
+        dataNasc: dataFormatada,
+        turmaId: Number(formData.turmaId),
+        mensalidade: mensalidadeNumerica
+      };
+
+      const { isValid, errors: validationErrors } = validateAlunoData(alunoData);
+      
+      if (!isValid) {
+        setErrors({
+          nome: validationErrors.nome || '',
+          dataNasc: validationErrors.dataNasc || '',
+          turmaId: validationErrors.turmaId || '',
+          mensalidade: validationErrors.mensalidade || ''
+        });
+        return;
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/alunos`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify({
-          nome: formData.nome.trim(),
-          dataNasc: dataFormatada,
-          turmaId: turmaIdNumerico,
-          isAtivo: true,
-          mensalidade: mensalidadeNumerica
-        })
-      });
+      setIsLoading(true);
+      setMensagem(null);
       
-      const data = await response.json();
+      const result = await createAluno(alunoData);
       
-      if (!response.ok) {
-        throw new Error(data.erro || 'Erro ao cadastrar aluno');
+      if (result.success) {
+        setMensagem({
+          texto: 'Aluno cadastrado com sucesso!',
+          tipo: 'sucesso'
+        });
+        
+        setFormData({
+          nome: '',
+          dataNasc: '',
+          turmaId: 0,
+          mensalidade: ''
+        });
+        setErrors({
+          nome: '',
+          dataNasc: '',
+          turmaId: '',
+          mensalidade: ''
+        });
+      } else {
+        setMensagem({
+          texto: result.message,
+          tipo: 'erro'
+        });
       }
-      
-      setMensagem({
-        texto: 'Aluno cadastrado com sucesso!',
-        tipo: 'sucesso'
-      });
-      
-      setFormData({
-        nome: '',
-        dataNasc: '',
-        turmaId: 0,
-        mensalidade: ''
-      });
-      
     } catch (error: any) {
       setMensagem({
         texto: error.message || 'Erro ao cadastrar aluno',
