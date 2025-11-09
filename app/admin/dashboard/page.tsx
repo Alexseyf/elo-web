@@ -37,7 +37,6 @@ export default function AdminDashboard() {
     if (checkUserRole(router, 'ADMIN')) {
       setUserData(getAuthUser());
       
-      // Verifica se há um parâmetro de seção na URL
       const urlParams = new URLSearchParams(window.location.search);
       const sectionParam = urlParams.get('section');
       if (sectionParam && sidebarItems.some(item => item.id === sectionParam)) {
@@ -415,11 +414,25 @@ export default function AdminDashboard() {
           
           <section id="atividades" className={activeSection === 'atividades' ? 'block' : 'hidden'}>
             <h2 className="mb-6 text-xl font-semibold">Atividades Pedagógicas</h2>
-            <div className="rounded-lg bg-white p-6 shadow">
-              <p className="mb-4">Gerencie as atividades pedagógicas do sistema.</p>
-              <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-                Criar Atividade
-              </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* <div className="rounded-lg bg-white p-6 shadow">
+                <h3 className="text-lg font-medium mb-4">Atividades</h3>
+                <p className="mb-4 text-gray-600">Gerencie as atividades pedagógicas do sistema.</p>
+                <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                  Criar Atividade
+                </button>
+              </div> */}
+              
+              <div className="rounded-lg bg-white p-6 shadow">
+                <h3 className="text-lg font-medium mb-4">Campos de Experiência</h3>
+                <p className="mb-4 text-gray-600">Gerencie os campos de experiência para as atividades.</p>
+                <button 
+                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  onClick={() => router.push('/admin/campos-experiencia')}
+                >
+                  Gerenciar Campos
+                </button>
+              </div>
             </div>
           </section>
           
