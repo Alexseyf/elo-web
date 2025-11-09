@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { checkUserRole } from '../../utils/auth';
+import { SidebarHeader } from '../../components';
+import { checkUserRole, getAuthUser, handleLogout } from '../../utils/auth';
 import { 
   CAMPO_EXPERIENCIA, 
   formatarCampoExperiencia, 
@@ -13,6 +14,8 @@ import {
 
 export default function CamposExperienciaPage() {
   const router = useRouter();
+  const [userData, setUserData] = useState<any>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [loadingCampos, setLoadingCampos] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,8 +25,10 @@ export default function CamposExperienciaPage() {
   const [camposCadastrados, setCamposCadastrados] = useState<CampoExperienciaResponse[]>([]);
 
   useEffect(() => {
-    checkUserRole(router, 'ADMIN');
-    loadCamposCadastrados();
+    if (checkUserRole(router, 'ADMIN')) {
+      setUserData(getAuthUser());
+      loadCamposCadastrados();
+    }
   }, [router]);
 
   const loadCamposCadastrados = async () => {
@@ -74,120 +79,218 @@ export default function CamposExperienciaPage() {
     }
   };
 
+  const onLogout = () => {
+    handleLogout();
+  };
+
+  if (!userData) {
+    return <div className="flex min-h-screen items-center justify-center">Carregando...</div>;
+  }
+
   const camposDisponiveis = Object.values(CAMPO_EXPERIENCIA).filter(
     campo => !camposCadastrados.some(c => c.campoExperiencia === campo)
   );
 
+  const sidebarItems = [
+    { id: 'visao-geral', label: 'Visão Geral', href: '#visao-geral' },
+    { id: 'usuarios', label: 'Usuários', href: '#usuarios' },
+    { id: 'alunos', label: 'Alunos', href: '#alunos' },
+    { id: 'turmas', label: 'Turmas', href: '#turmas' },
+    { id: 'diarios', label: 'Diários', href: '#diarios' },
+    { id: 'atividades', label: 'Atividades Pedagógicas', href: '#atividades' },
+    { id: 'calendario', label: 'Calendário', href: '#calendario' },
+    { id: 'cronograma', label: 'Cronograma Anual', href: '#cronograma' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-      <div className="max-w-4xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Campos de Experiência</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Gerencie os campos de experiência do sistema
-          </p>
+    <div className="flex min-h-screen bg-gray-50 relative">
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-gray-800 bg-opacity-50 z-20 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        ></div>
+      )}
+      
+      <aside 
+        className={`${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } fixed inset-y-0 left-0 w-64 bg-white shadow-md z-30 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-0`}
+      >
+        <SidebarHeader
+          onClose={() => setMobileMenuOpen(false)}
+          showCloseButton={true}
+        />
+        
+        <nav className="p-2">
+          <ul>
+            {sidebarItems.map((item) => (
+              <li key={item.id} className="mb-1">
+                <a
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (item.id === 'visao-geral') {
+                      router.push('/admin/dashboard');
+                    } else if (item.id === 'atividades') {
+                      setMobileMenuOpen(false);
+                    } else {
+                      router.push(`/admin/dashboard?section=${item.id}`);
+                    }
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`block rounded-md px-4 py-2 text-sm transition-colors ${
+                    item.id === 'atividades'
+                      ? 'bg-blue-100 text-blue-700 font-medium'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="lg:absolute lg:bottom-0 w-full border-t p-4 mt-6 lg:mt-0">
+          <div className="mb-2">
+            <p className="font-medium text-sm">{userData.nome}</p>
+            <p className="text-xs text-gray-600">{userData.email}</p>
+          </div>
+          <button
+            onClick={onLogout}
+            className="w-full rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700"
+          >
+            Sair
+          </button>
+        </div>
+      </aside>
+
+      <div className="flex-1">
+        <header className="bg-white shadow-sm p-4 flex items-center justify-between md:hidden">
+          <button 
+            className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
         </header>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium mb-4">Cadastrar Novo Campo</h2>
-          
-          {successMessage && (
-            <div className="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded">
-              {successMessage}
+        <main className="p-4 md:pt-6 lg:p-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-gray-800">Campos de Experiência</h1>
+              <p className="text-sm text-gray-600 mt-1">
+                Gerencie os campos de experiência disponíveis no sistema
+              </p>
             </div>
-          )}
 
-          {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="campo" className="block text-sm font-medium text-gray-700 mb-1">
-                Campo de Experiência
-              </label>
-              <select
-                id="campo"
-                value={selectedCampo}
-                onChange={(e) => setSelectedCampo(e.target.value as CAMPO_EXPERIENCIA | '')}
-                className="w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                disabled={loading || camposDisponiveis.length === 0}
-              >
-                <option value="">Selecione um campo...</option>
-                {camposDisponiveis.map((campo) => (
-                  <option key={campo} value={campo}>
-                    {formatarCampoExperiencia(campo)}
-                  </option>
-                ))}
-              </select>
-              {camposDisponiveis.length === 0 && (
-                <p className="mt-2 text-sm text-gray-500">
-                  Todos os campos de experiência já foram cadastrados.
-                </p>
+            <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-4">Cadastrar Novo Campo</h2>
+              
+              {(error || successMessage) && (
+                <div className={`p-4 mb-6 rounded-md ${
+                  successMessage 
+                    ? 'bg-green-50 text-green-700 border border-green-200' 
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}>
+                  <p>{successMessage || error}</p>
+                </div>
               )}
-            </div>
 
-            <button
-              type="submit"
-              disabled={loading || camposDisponiveis.length === 0}
-              className={`w-full sm:w-auto px-4 py-2 rounded-md text-white font-medium ${
-                loading || camposDisponiveis.length === 0
-                  ? 'bg-blue-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
-            >
-              {loading ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Cadastrando...
-                </span>
-              ) : (
-                'Cadastrar Campo'
-              )}
-            </button>
-          </form>
-        </div>
-
-        <div className="mt-8 bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium">Campos de Experiência</h2>
-          </div>
-          
-          {loadingCampos ? (
-            <div className="px-6 py-8 text-center">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-          ) : errorCampos ? (
-            <div className="p-6 text-center">
-              <p className="text-red-600">{errorCampos}</p>
-              <button 
-                onClick={loadCamposCadastrados}
-                className="mt-2 text-sm text-blue-600 hover:text-blue-800 underline"
-              >
-                Tentar novamente
-              </button>
-            </div>
-          ) : camposCadastrados.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-500">
-              Nenhum campo de experiência cadastrado.
-            </div>
-          ) : (
-            <ul className="divide-y divide-gray-200">
-              {camposCadastrados.map((campo) => (
-                <li key={campo.id} className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">
-                    {formatarCampoExperiencia(campo.campoExperiencia)}
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="campo" className="block text-sm font-medium text-gray-700 mb-1">
+                      Campo de Experiência*
+                    </label>
+                    <select
+                      id="campo"
+                      value={selectedCampo}
+                      onChange={(e) => setSelectedCampo(e.target.value as CAMPO_EXPERIENCIA | '')}
+                      className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 
+                        ${error ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}`}
+                      disabled={loading || camposDisponiveis.length === 0}
+                    >
+                      <option value="">Selecione um campo...</option>
+                      {camposDisponiveis.map((campo) => (
+                        <option key={campo} value={campo}>
+                          {formatarCampoExperiencia(campo)}
+                        </option>
+                      ))}
+                    </select>
+                    {camposDisponiveis.length === 0 && (
+                      <p className="mt-2 text-sm text-gray-500">
+                        Todos os campos de experiência já foram cadastrados.
+                      </p>
+                    )}
                   </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                    <button
+                      type="submit"
+                      disabled={loading || camposDisponiveis.length === 0}
+                      className="flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {loading ? (
+                        <div className="flex items-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                          <span>Cadastrando...</span>
+                        </div>
+                      ) : (
+                        'Cadastrar Campo'
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => router.push('/admin/dashboard?section=atividades')}
+                      className="flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div className="bg-white shadow-md rounded-lg overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h2 className="text-lg font-medium text-gray-900">Campos Cadastrados</h2>
+              </div>
+              
+              {loadingCampos ? (
+                <div className="px-6 py-8 text-center">
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+              ) : errorCampos ? (
+                <div className="p-6 text-center">
+                  <p className="text-red-600">{errorCampos}</p>
+                  <button 
+                    onClick={loadCamposCadastrados}
+                    className="mt-2 text-sm text-blue-600 hover:text-blue-800 underline"
+                  >
+                    Tentar novamente
+                  </button>
+                </div>
+              ) : camposCadastrados.length === 0 ? (
+                <div className="px-6 py-8 text-center text-gray-500">
+                  Nenhum campo de experiência cadastrado.
+                </div>
+              ) : (
+                <ul className="divide-y divide-gray-200">
+                  {camposCadastrados.map((campo) => (
+                    <li key={campo.id} className="px-6 py-4">
+                      <div className="text-sm font-medium text-gray-900">
+                        {formatarCampoExperiencia(campo.campoExperiencia)}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );
