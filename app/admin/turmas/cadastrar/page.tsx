@@ -60,7 +60,7 @@ export default function CadastrarTurma() {
       });
       
       if (!resultado.success) {
-        throw new Error(resultado.error);
+        throw new Error(resultado.message || 'Erro ao cadastrar turma');
       }
       
       setMensagem({

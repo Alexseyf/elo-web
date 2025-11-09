@@ -253,80 +253,65 @@ export async function fetchTotalAlunosPorTurma(): Promise<{
   }
 }
 
-export async function cadastrarTurma(dadosTurma: DadosTurma): Promise<{
+export interface CreateTurmaResult {
   success: boolean;
+  message: string;
   data?: Turma;
-  error?: string;
-}> {
+}
+
+export async function cadastrarTurma(dadosTurma: DadosTurma): Promise<CreateTurmaResult> {
   try {
     const token = getAuthToken();
-    const role = localStorage.getItem('role');
-    
-    if (role !== 'ADMIN') {
-      return {
-        success: false,
-        error: 'Acesso negado: apenas administradores podem cadastrar turmas'
-      };
-    }
-    
-    if (!token) {
-      return {
-        success: false,
-        error: 'Usuário não autenticado'
-      };
-    }
 
     if (!dadosTurma.nome) {
       return {
         success: false,
-        error: 'Nome da turma é obrigatório'
+        message: 'Nome da turma é obrigatório'
       };
     }
 
     if (!Object.values(TURMA).includes(dadosTurma.nome)) {
       return {
         success: false,
-        error: 'Nome da turma deve ser um valor válido: ' + Object.values(TURMA).join(', ')
+        message: 'Nome da turma deve ser um valor válido: ' + Object.values(TURMA).join(', ')
       };
     }
-    
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/turmas`, {
+
+    const response = await fetch(`${config.API_URL}/turmas`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(dadosTurma)
+      body: JSON.stringify({ nome: dadosTurma.nome })
     });
     
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      
-      if (handleAuthError(response)) {
+      if (response.status === 401 || response.status === 403) {
         return {
           success: false,
-          error: 'Sessão expirada. Por favor, faça login novamente.'
+          message: 'Não autorizado'
         };
       }
       
+      const errorData = await response.json().catch(() => null);
       return {
         success: false,
-        error: errorData.message || `Erro ao cadastrar turma: ${response.status}`
+        message: errorData?.erro?.message || errorData?.message || `Erro ao cadastrar turma: ${response.status}`
       };
     }
-    
+
     const novaTurma = await response.json();
-    
     return {
       success: true,
+      message: 'Turma cadastrada com sucesso',
       data: novaTurma
     };
   } catch (error) {
     console.error('Erro ao cadastrar turma:', error);
-    
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Erro desconhecido ao cadastrar turma'
+      message: 'Erro ao cadastrar turma'
     };
   }
 }
