@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sidebar } from '../../../components';
-import { getGrupos, Grupo } from '../../../utils/grupos';
+import { getGrupos, Grupo, formatarNomeGrupo } from '../../../utils/grupos';
 import { getCamposExperiencia, formatarCampoExperiencia } from '../../../utils/campos';
 import { checkUserRole, getAuthUser, handleLogout, getAuthToken } from '../../../utils/auth';
 
@@ -243,7 +243,7 @@ export default function CadastrarObjetivo() {
                   >
                     <option value="">Selecione o grupo</option>
                     {grupos.map((grupo) => (
-                      <option key={grupo.id} value={grupo.id}>{grupo.nome}</option>
+                      <option key={grupo.id} value={grupo.id}>{formatarNomeGrupo(grupo.nome)}</option>
                     ))}
                   </select>
                   {errors.grupoId && <p className="mt-1 text-sm text-red-600">{errors.grupoId}</p>}
