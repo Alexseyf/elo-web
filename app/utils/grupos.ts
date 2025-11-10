@@ -51,11 +51,10 @@ export interface GrupoFormatado extends Grupo {
   nomeFormatado: string;
 }
 
-export function getGruposFormatados(): Promise<GrupoFormatado[]> {
-  return getGrupos().then(grupos => 
-    grupos.map(grupo => ({
-      ...grupo,
-      nomeFormatado: formatarNomeGrupo(grupo.nome)
-    }))
-  );
+export async function getGruposFormatados(): Promise<GrupoFormatado[]> {
+  const grupos = await getGrupos();
+  return grupos.map(grupo => ({
+    ...grupo,
+    nomeFormatado: formatarNomeGrupo(grupo.nome)
+  }));
 }

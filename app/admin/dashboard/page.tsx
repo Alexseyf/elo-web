@@ -507,12 +507,21 @@ export default function AdminDashboard() {
                 <p className="mb-4 text-gray-600">
                   Gerencie os objetivos pedagógicos.
                 </p>
+                <div className="flex gap-4">
                 <button
                   className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                   onClick={() => router.push("/admin/objetivos/cadastrar")}
                 >
                   Gerenciar Objetivos
                 </button>
+                <button
+                  className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                  onClick={() => router.push("/admin/objetivos/listar")}
+                >
+                  Listar Objetivos
+                </button>
+                </div>
+
               </div>
             </div>
           </section>

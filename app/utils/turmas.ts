@@ -316,7 +316,6 @@ export async function cadastrarTurma(dadosTurma: DadosTurma): Promise<CreateTurm
   }
 }
 
-
 export async function cadastrarTurmaComNomeFormatado(nomeFormatado: string): Promise<{
   success: boolean;
   data?: Turma;
@@ -333,3 +332,4 @@ export async function cadastrarTurmaComNomeFormatado(nomeFormatado: string): Pro
 
   return cadastrarTurma({ nome: enumTurma });
 }
+
