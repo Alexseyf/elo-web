@@ -83,13 +83,26 @@ export default function ListarObjetivos() {
       />
 
       <div className="flex-1">
+        <header className="bg-white shadow-sm p-4 flex items-center md:hidden z-40">
+          <button
+            className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Abrir menu"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </header>
+
         <main className="p-4 md:pt-6 lg:p-8">
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-800">Objetivos</h1>
               <p className="text-sm text-gray-600 mt-1">Listagem de objetivos cadastrados</p>
             </div>
-            <div>
+
+            <div className="mt-3 md:mt-0">
               <button
                 onClick={() => router.push('/admin/objetivos/cadastrar')}
                 className="py-2 px-4 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700"
