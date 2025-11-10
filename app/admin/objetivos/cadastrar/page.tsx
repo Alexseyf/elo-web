@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sidebar } from '../../../components';
 import { getGrupos, Grupo } from '../../../utils/grupos';
-import { getCamposExperiencia } from '../../../utils/campos';
+import { getCamposExperiencia, formatarCampoExperiencia } from '../../../utils/campos';
 import { checkUserRole, getAuthUser, handleLogout, getAuthToken } from '../../../utils/auth';
 
 export default function CadastrarObjetivo() {
@@ -263,7 +263,9 @@ export default function CadastrarObjetivo() {
                   >
                     <option value="">Selecione o campo</option>
                     {campos.map((campo: any) => (
-                      <option key={campo.id} value={campo.id}>{campo.campoExperiencia || campo.nome}</option>
+                      <option key={campo.id} value={campo.id}>
+                        {formatarCampoExperiencia(campo.campoExperiencia) || campo.nome}
+                      </option>
                     ))}
                   </select>
                   {errors.campoExperienciaId && <p className="mt-1 text-sm text-red-600">{errors.campoExperienciaId}</p>}
