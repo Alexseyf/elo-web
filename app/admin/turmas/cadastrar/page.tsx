@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { SidebarHeader } from '../../../components';
+import { Sidebar } from '../../../components';
 import { checkUserRole, getAuthUser, handleLogout } from '../../../utils/auth';
-
 import { TURMA, cadastrarTurma, formatarNomeTurma } from '../../../utils/turmas';
 
 export default function CadastrarTurma() {
@@ -106,67 +105,34 @@ export default function CadastrarTurma() {
 
   return (
     <div className="flex min-h-screen bg-gray-50 relative">
-      {mobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-gray-800 bg-opacity-50 z-20 lg:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        ></div>
-      )}
-      
-      <aside 
-        className={`${
-          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed inset-y-0 left-0 w-64 bg-white shadow-md z-30 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-0`}
-      >
-        <SidebarHeader
-          onClose={() => setMobileMenuOpen(false)}
-          showCloseButton={true}
-        />
-        
-        <nav className="p-2">
-          <ul>
-            {sidebarItems.map((item) => (
-              <li key={item.id} className="mb-1">
-                <a
-                  href={item.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (item.id === 'visao-geral') {
-                      router.push('/admin/dashboard');
-                    } else if (item.id === 'turmas') {
-                      setMobileMenuOpen(false);
-                    } else {
-                      router.push(`/admin/dashboard?section=${item.id}`);
-                    }
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`block rounded-md px-4 py-2 text-sm transition-colors ${
-                    item.id === 'turmas'
-                      ? 'bg-blue-100 text-blue-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="lg:absolute lg:bottom-0 w-full border-t p-4 mt-6 lg:mt-0">
-          <div className="mb-2">
-            <p className="font-medium text-sm">{userData.nome}</p>
-            <p className="text-xs text-gray-600">{userData.email}</p>
-          </div>
-          <button
-            onClick={onLogout}
-            className="w-full rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700"
-          >
-            Sair
-          </button>
-        </div>
-      </aside>
+      <Sidebar
+        items={sidebarItems}
+        activeSection="turmas"
+        setActiveSection={(id) => {
+          if (id === 'visao-geral') {
+            router.push('/admin/dashboard');
+          } else {
+            router.push(`/admin/dashboard?section=${id}`);
+          }
+        }}
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+        userData={userData}
+        onLogout={onLogout}
+      />
 
       <div className="flex-1">
+        <header className="bg-white shadow-sm p-4 flex items-center justify-between md:hidden">
+          <button 
+            className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </header>
+
         <div className="py-10 px-4 sm:px-6 lg:px-8">
           <div className="sm:flex sm:items-center">
             <div className="sm:flex-auto">
