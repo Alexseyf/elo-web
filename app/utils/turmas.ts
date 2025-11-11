@@ -179,6 +179,21 @@ export function formatarNomeTurma(nomeTurma: string): string {
   return mapeamentoTurmas[turmaUpperCase] || nomeTurma;
 }
 
+export function mapearTurmaParaGrupo(nomeTurma: string): string {
+  const turmaUpperCase = nomeTurma.toUpperCase();
+  
+  const mapeamentoTurmaGrupo: Record<string, string> = {
+    'BERCARIO2': 'BEBES',
+    'MATERNAL1': 'CRIANCAS_BEM_PEQUENAS',
+    'MATERNAL2': 'CRIANCAS_BEM_PEQUENAS',
+    'PRE1': 'CRIANCAS_PEQUENAS',
+    'PRE2': 'CRIANCAS_PEQUENAS',
+    'TURNOINVERSO': 'CRIANCAS_MAIORES'
+  };
+
+  return mapeamentoTurmaGrupo[turmaUpperCase] || '';
+}
+
 export function converterNomeParaEnum(nomeFormatado: string): TURMA | null {
   const mapeamentoInverso: Record<string, TURMA> = {
     'Berçário 2': TURMA.BERCARIO2,
@@ -192,6 +207,65 @@ export function converterNomeParaEnum(nomeFormatado: string): TURMA | null {
   return mapeamentoInverso[nomeFormatado] || 
          (Object.values(TURMA).includes(nomeFormatado.toUpperCase() as TURMA) ? 
           nomeFormatado.toUpperCase() as TURMA : null);
+}
+
+let gruposCache: Array<{id: number; nome: string}> | null = null;
+
+export async function getGrupos(): Promise<Array<{id: number; nome: string}>> {
+  try {
+    if (gruposCache) {
+      return gruposCache;
+    }
+
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('Usuário não autenticado');
+    }
+
+    const response = await fetch(`${config.API_URL}/grupos`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Erro ao buscar grupos: ${response.status}`);
+    }
+
+    const grupos = await response.json();
+    gruposCache = grupos;
+    return grupos;
+  } catch (error) {
+    console.error('Erro ao buscar grupos:', error);
+    return [];
+  }
+}
+
+export async function mapearGrupoParaId(nomeGrupo: string): Promise<number> {
+  try {
+    const grupos = await getGrupos();
+
+    const grupoEncontrado = grupos.find(g => 
+      g.nome.toUpperCase() === nomeGrupo.toUpperCase()
+    );
+    
+    if (!grupoEncontrado) {
+      console.error('Grupo não encontrado:', nomeGrupo);
+      return 0;
+    }
+
+    return grupoEncontrado.id;
+  } catch (error) {
+    console.error('Erro ao mapear grupo para ID:', error);
+    return 0;
+  }
+}
+
+export function limparCachesGrupos(): void {
+  gruposCache = null;
 }
 
 export function formatarTurmas(turmas: Turma[]): Turma[] {

@@ -89,6 +89,8 @@ export interface GetCamposExperienciaResult {
   data?: CampoExperienciaResponse[];
 }
 
+let camposCache: CampoExperienciaResponse[] | null = null;
+
 export async function getCamposExperiencia(): Promise<GetCamposExperienciaResult> {
   try {
     const token = getAuthToken();
@@ -116,6 +118,7 @@ export async function getCamposExperiencia(): Promise<GetCamposExperienciaResult
     }
 
     const responseData = await response.json();
+    camposCache = responseData;
     return {
       success: true,
       message: 'Campos de experiência obtidos com sucesso',
@@ -128,4 +131,33 @@ export async function getCamposExperiencia(): Promise<GetCamposExperienciaResult
       message: 'Erro ao buscar campos de experiência'
     };
   }
+}
+
+export async function mapearCampoExperienciaParaId(nomeCampo: CAMPO_EXPERIENCIA): Promise<number> {
+  try {
+    if (!camposCache) {
+      const resultado = await getCamposExperiencia();
+      if (!resultado.success || !resultado.data) {
+        console.error('Erro ao buscar campos para mapeamento:', resultado.message);
+        return 0;
+      }
+      camposCache = resultado.data;
+    }
+
+    const campoEncontrado = camposCache.find(c => c.campoExperiencia === nomeCampo);
+    
+    if (!campoEncontrado) {
+      console.error('Campo não encontrado no cache:', nomeCampo);
+      return 0;
+    }
+
+    return campoEncontrado.id;
+  } catch (error) {
+    console.error('Erro ao mapear campo de experiência para ID:', error);
+    return 0;
+  }
+}
+
+export function limparCachesCampos(): void {
+  camposCache = null;
 }

@@ -170,7 +170,7 @@ export default function ProfessorDashboard() {
                 <button
                   className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                   onClick={() => {
-                    /* Implementar criação de atividades */
+                    router.push('/professor/atividades/cadastrar');
                   }}
                 >
                   Registrar nova atividade
