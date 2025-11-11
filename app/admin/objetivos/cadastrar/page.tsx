@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sidebar } from '../../../components';
+import { Sidebar, CustomSelect } from '../../../components';
 import { getGrupos, Grupo, formatarNomeGrupo } from '../../../utils/grupos';
 import { getCamposExperiencia, formatarCampoExperiencia } from '../../../utils/campos';
 import { checkUserRole, getAuthUser, handleLogout, getAuthToken } from '../../../utils/auth';
@@ -233,19 +233,18 @@ export default function CadastrarObjetivo() {
                   <label htmlFor="grupoId" className="block text-sm font-medium text-gray-700 mb-1">
                     Grupo*
                   </label>
-                  <select
+                  <CustomSelect
                     id="grupoId"
                     name="grupoId"
                     value={formData.grupoId}
                     onChange={handleInputChange}
-                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 
-                      ${errors.grupoId ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}`}
-                  >
-                    <option value="">Selecione o grupo</option>
-                    {grupos.map((grupo) => (
-                      <option key={grupo.id} value={grupo.id}>{formatarNomeGrupo(grupo.nome)}</option>
-                    ))}
-                  </select>
+                    options={grupos.map((grupo) => ({
+                      value: grupo.id,
+                      label: formatarNomeGrupo(grupo.nome)
+                    }))}
+                    error={!!errors.grupoId}
+                    className="text-gray-900"
+                  />
                   {errors.grupoId && <p className="mt-1 text-sm text-red-600">{errors.grupoId}</p>}
                 </div>
 
@@ -253,21 +252,18 @@ export default function CadastrarObjetivo() {
                   <label htmlFor="campoExperienciaId" className="block text-sm font-medium text-gray-700 mb-1">
                     Campo de Experiência*
                   </label>
-                  <select
+                  <CustomSelect
                     id="campoExperienciaId"
                     name="campoExperienciaId"
                     value={formData.campoExperienciaId}
                     onChange={handleInputChange}
-                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 
-                      ${errors.campoExperienciaId ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}`}
-                  >
-                    <option value="">Selecione o campo</option>
-                    {campos.map((campo: any) => (
-                      <option key={campo.id} value={campo.id}>
-                        {formatarCampoExperiencia(campo.campoExperiencia) || campo.nome}
-                      </option>
-                    ))}
-                  </select>
+                    options={campos.map((campo: any) => ({
+                      value: campo.id,
+                      label: formatarCampoExperiencia(campo.campoExperiencia) || campo.nome
+                    }))}
+                    error={!!errors.campoExperienciaId}
+                    className="text-gray-900"
+                  />
                   {errors.campoExperienciaId && <p className="mt-1 text-sm text-red-600">{errors.campoExperienciaId}</p>}
                 </div>
 
