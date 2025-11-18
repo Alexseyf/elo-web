@@ -23,6 +23,7 @@ import {
   Usuario,
   UsuariosPorRole,
 } from "../../utils/usuarios";
+import { getAdminSidebarItems } from "../../utils/sidebarItems";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -39,16 +40,7 @@ export default function AdminDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
-  const sidebarItems = [
-    { id: "visao-geral", label: "Visão Geral", href: "#visao-geral" },
-    { id: "usuarios", label: "Usuários", href: "#usuarios" },
-    { id: "alunos", label: "Alunos", href: "#alunos" },
-    { id: "turmas", label: "Turmas", href: "#turmas" },
-    { id: "diarios", label: "Diários", href: "#diarios" },
-    { id: "atividades", label: "Atividades Pedagógicas", href: "#atividades" },
-    { id: "calendario", label: "Calendário", href: "#calendario" },
-    { id: "cronograma", label: "Cronograma Anual", href: "#cronograma" },
-  ];
+  const sidebarItems = getAdminSidebarItems();
 
   useEffect(() => {
     if (checkUserRole(router, "ADMIN")) {

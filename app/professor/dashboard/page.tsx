@@ -9,6 +9,7 @@ import {
   checkUserRole,
 } from "../../utils/auth";
 import { Sidebar } from "../../components";
+import { getProfessorSidebarItems } from "../../utils/sidebarItems";
 
 export default function ProfessorDashboard() {
   const router = useRouter();
@@ -16,16 +17,7 @@ export default function ProfessorDashboard() {
   const [activeSection, setActiveSection] = useState("visao-geral");
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
-  const sidebarItems = [
-    { id: "visao-geral", label: "Visão Geral", href: "#visao-geral" },
-    { id: "minhas-turmas", label: "Minhas Turmas", href: "#minhas-turmas" },
-    { id: "atividades", label: "Atividades", href: "#atividades" },
-    { id: "alunos", label: "Alunos", href: "#alunos" },
-    { id: "diarios", label: "Diários", href: "#diarios" },
-    { id: "calendario", label: "Calendário", href: "#calendario" },
-    { id: "cronograma", label: "Cronograma", href: "#cronograma" },
-    { id: "relatorios", label: "Relatórios", href: "#relatorios" },
-  ];
+  const sidebarItems = getProfessorSidebarItems();
 
   useEffect(() => {
     if (checkUserRole(router, "PROFESSOR")) {

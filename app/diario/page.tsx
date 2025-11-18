@@ -9,6 +9,7 @@ import {
   getAuthUser,
   handleLogout,
 } from '@/app/utils/auth';
+import { getDiarioSidebarItems } from '@/app/utils/sidebarItems';
 
 interface DiarioCard {
   id: string;
@@ -27,17 +28,7 @@ export default function DiarioPage() {
   const [userData, setUserData] = useState<any>(null);
   const [activeSection, setActiveSection] = useState('diarios');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const sidebarItems = [
-    { id: 'visao-geral', label: 'Visão Geral', href: '/admin/dashboard?section=visao-geral' },
-    { id: 'usuarios', label: 'Usuários', href: '/admin/dashboard?section=usuarios' },
-    { id: 'alunos', label: 'Alunos', href: '/admin/dashboard?section=alunos' },
-    { id: 'turmas', label: 'Turmas', href: '/admin/dashboard?section=turmas' },
-    { id: 'diarios', label: 'Diários', href: '/professor/dashboard?section=diarios' },
-    { id: 'atividades', label: 'Atividades Pedagógicas', href: '/admin/dashboard?section=atividades' },
-    { id: 'calendario', label: 'Calendário', href: '/admin/dashboard?section=calendario' },
-    { id: 'cronograma', label: 'Cronograma Anual', href: '/admin/dashboard?section=cronograma' },
-  ];
+  const [sidebarItems, setSidebarItems] = useState<ReturnType<typeof getDiarioSidebarItems>>([]);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -47,6 +38,11 @@ export default function DiarioPage() {
     
     const user = getAuthUser();
     setUserData(user);
+
+    if (user?.roles?.[0]) {
+      setSidebarItems(getDiarioSidebarItems(user.roles[0]));
+    }
+    
     loadDiarios();
   }, [router]);
 

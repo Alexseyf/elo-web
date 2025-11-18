@@ -11,6 +11,7 @@ import {
 } from '@/utils/auth';
 import { getTurmasProfessor, type TurmaProfessor, type Aluno as AlunoProf } from '@/utils/professores';
 import { verificarRegistroDiarioAluno } from '@/utils/alunos';
+import { getDiarioSidebarItems } from '@/utils/sidebarItems';
 import DiarioStepper from '../components/DiarioStepper';
 import type { DiarioFormData } from '@/types/diario';
 import { formatarNomeTurma } from '@/utils/turmas';
@@ -29,17 +30,7 @@ export default function NovoPage() {
   const [loadingAlunos, setLoadingAlunos] = useState(false);
   const [alunosComDiario, setAlunosComDiario] = useState<Set<number>>(new Set());
   const [loadingDiariosStatus, setLoadingDiariosStatus] = useState(false);
-
-  const sidebarItems = [
-    { id: 'visao-geral', label: 'Visão Geral', href: '/admin/dashboard?section=visao-geral' },
-    { id: 'usuarios', label: 'Usuários', href: '/admin/dashboard?section=usuarios' },
-    { id: 'alunos', label: 'Alunos', href: '/admin/dashboard?section=alunos' },
-    { id: 'turmas', label: 'Turmas', href: '/admin/dashboard?section=turmas' },
-    { id: 'diarios', label: 'Diários', href: '/professor/dashboard?section=diarios' },
-    { id: 'atividades', label: 'Atividades Pedagógicas', href: '/admin/dashboard?section=atividades' },
-    { id: 'calendario', label: 'Calendário', href: '/admin/dashboard?section=calendario' },
-    { id: 'cronograma', label: 'Cronograma Anual', href: '/admin/dashboard?section=cronograma' },
-  ];
+  const [sidebarItems, setSidebarItems] = useState<ReturnType<typeof getDiarioSidebarItems>>([]);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -49,6 +40,10 @@ export default function NovoPage() {
     
     const user = getAuthUser();
     setUserData(user);
+
+    if (user?.roles?.[0]) {
+      setSidebarItems(getDiarioSidebarItems(user.roles[0]));
+    }
     
     if (user && user.id) {
       loadTurmasAlunos(user.id);
