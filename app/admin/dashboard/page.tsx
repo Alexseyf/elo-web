@@ -434,6 +434,7 @@ export default function AdminDashboard() {
                                   className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-2 py-1 rounded text-xs"
                                   onClick={() => {
                                     router.push(`/admin/turmas/${turma.id}/alunos`);
+                                    // TODO: IMPLEMENTAR DETALHES DA TURMA E AJUSTAR ROTA
                                   }}
                                 >
                                   Detalhes
