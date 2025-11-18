@@ -170,3 +170,50 @@ export async function getAlunosByTurma(turmaId: number): Promise<Aluno[]> {
   }
 }
 
+export interface VerificaDiarioResult {
+  alunoId: number;
+  data: string;
+  temDiario: boolean;
+  diario: { id: number } | null;
+}
+
+export async function verificarRegistroDiarioAluno(
+  alunoId: number,
+  data?: string
+): Promise<VerificaDiarioResult | null> {
+  try {
+    const token = getAuthToken();
+    
+    const url = new URL(`${config.API_URL}/alunos/${alunoId}/possui-registro-diario`);
+    if (data) {
+      url.searchParams.append('data', data);
+    }
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        console.error('Unauthorized access');
+        return null;
+      }
+      if (response.status === 404) {
+        console.error('Aluno não encontrado');
+        return null;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data_response = await response.json();
+    return data_response as VerificaDiarioResult;
+  } catch (error) {
+    console.error('Error verificando registro de diário:', error);
+    return null;
+  }
+}
+

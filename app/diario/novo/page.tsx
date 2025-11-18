@@ -10,6 +10,7 @@ import {
   getAuthToken,
 } from '@/utils/auth';
 import { getTurmasProfessor, type TurmaProfessor, type Aluno as AlunoProf } from '@/utils/professores';
+import { verificarRegistroDiarioAluno } from '@/utils/alunos';
 import DiarioStepper from '../components/DiarioStepper';
 import type { DiarioFormData } from '@/types/diario';
 import { formatarNomeTurma } from '@/utils/turmas';
@@ -26,6 +27,8 @@ export default function NovoPage() {
   const [todosAlunos, setTodosAlunos] = useState<AlunoProf[]>([]);
   const [alunoSelecionado, setAlunoSelecionado] = useState<AlunoProf | null>(null);
   const [loadingAlunos, setLoadingAlunos] = useState(false);
+  const [alunosComDiario, setAlunosComDiario] = useState<Set<number>>(new Set());
+  const [loadingDiariosStatus, setLoadingDiariosStatus] = useState(false);
 
   const sidebarItems = [
     { id: 'visao-geral', label: 'Visão Geral', href: '/admin/dashboard?section=visao-geral' },
@@ -75,6 +78,7 @@ export default function NovoPage() {
         });
         
         setTodosAlunos(alunos);
+        await carregarStatusDiarios(alunos);
       } else {
         setError(result.message || 'Erro ao carregar turmas do professor');
       }
@@ -83,6 +87,39 @@ export default function NovoPage() {
       setError('Erro ao carregar dados do professor');
     } finally {
       setLoadingAlunos(false);
+    }
+  };
+
+  const carregarStatusDiarios = async (alunos: AlunoProf[]) => {
+    try {
+      setLoadingDiariosStatus(true);
+
+      const verificacoes = alunos.map(aluno =>
+        verificarRegistroDiarioAluno(aluno.id)
+          .then(resultado => ({
+            alunoId: aluno.id,
+            temDiario: resultado?.temDiario ?? false
+          }))
+          .catch(err => {
+            console.error(`Erro ao verificar diário do aluno ${aluno.id}:`, err);
+            return { alunoId: aluno.id, temDiario: false };
+          })
+      );
+
+      const resultados = await Promise.all(verificacoes);
+      const alunosComDiarioSet = new Set<number>();
+      resultados.forEach(resultado => {
+        if (resultado.temDiario) {
+          alunosComDiarioSet.add(resultado.alunoId);
+        }
+      });
+      
+      setAlunosComDiario(alunosComDiarioSet);
+    } catch (err) {
+      console.error('Erro ao carregar status de diários:', err);
+      setAlunosComDiario(new Set());
+    } finally {
+      setLoadingDiariosStatus(false);
     }
   };
 
@@ -275,7 +312,14 @@ export default function NovoPage() {
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-6">
+                    <div>
+                      {loadingDiariosStatus && (
+                        <div className="mb-4 flex items-center justify-center p-3 bg-blue-50 border border-blue-200 rounded-md">
+                          <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-blue-500 mr-2"></div>
+                          <span className="text-sm text-blue-700">Verificando diários registrados...</span>
+                        </div>
+                      )}
+                      <div className="space-y-6">
                       {turmas.map(turma => (
                         <div key={turma.id} className="border border-gray-200 rounded-lg overflow-hidden">
                           {/* Card da Turma */}
@@ -298,66 +342,84 @@ export default function NovoPage() {
                               </p>
                             ) : (
                               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                {turma.alunos.map(aluno => (
-                                  <div
-                                    key={aluno.id}
-                                    onClick={() => setAlunoSelecionado({
-                                      ...aluno,
-                                      turma: { id: turma.id, nome: turma.nome }
-                                    } as AlunoProf & { turma: { id: number; nome: string } })}
-                                    className="bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group"
-                                  >
-                                    <div className="flex items-center space-x-3">
-                                      <div className="flex-shrink-0">
-                                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                          <svg
-                                            className="w-5 h-5 text-blue-600"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                          >
-                                            <path
-                                              strokeLinecap="round"
-                                              strokeLinejoin="round"
-                                              strokeWidth={2}
-                                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                            />
-                                          </svg>
+                                {turma.alunos.map(aluno => {
+                                  const temDiario = alunosComDiario.has(aluno.id);
+                                  return (
+                                    <div
+                                      key={aluno.id}
+                                      onClick={() => !temDiario && setAlunoSelecionado({
+                                        ...aluno,
+                                        turma: { id: turma.id, nome: turma.nome }
+                                      } as AlunoProf & { turma: { id: number; nome: string } })}
+                                      className={`relative bg-white border rounded-lg p-4 transition-all cursor-pointer group ${
+                                        temDiario
+                                          ? 'border-green-200 bg-green-50 cursor-default hover:shadow-none'
+                                          : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+                                      }`}
+                                    >
+                                      <div className="flex items-center space-x-3">
+                                        <div className="flex-shrink-0">
+                                          <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+                                            temDiario
+                                              ? 'bg-green-100'
+                                              : 'bg-blue-100 group-hover:bg-blue-200'
+                                          }`}>
+                                            <svg
+                                              className={`w-5 h-5 ${
+                                                temDiario ? 'text-green-600' : 'text-blue-600'
+                                              }`}
+                                              fill="none"
+                                              stroke="currentColor"
+                                              viewBox="0 0 24 24"
+                                            >
+                                              <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                              />
+                                            </svg>
+                                          </div>
                                         </div>
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-900 truncate">
-                                          {aluno.nome}
-                                        </p>
-                                        {aluno.email && (
-                                          <p className="text-xs text-gray-500 truncate">
-                                            {aluno.email}
+                                        <div className="flex-1 min-w-0">
+                                          <p className={`text-sm font-medium truncate ${
+                                            temDiario ? 'text-gray-600' : 'text-gray-900'
+                                          }`}>
+                                            {aluno.nome}
                                           </p>
+                                          {aluno.email && (
+                                            <p className="text-xs text-gray-500 truncate">
+                                              {aluno.email}
+                                            </p>
+                                          )}
+                                        </div>
+                                        {!temDiario && (
+                                          <div className="flex-shrink-0">
+                                            <svg
+                                              className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              viewBox="0 0 24 24"
+                                            >
+                                              <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M9 5l7 7-7 7"
+                                              />
+                                            </svg>
+                                          </div>
                                         )}
                                       </div>
-                                      <div className="flex-shrink-0">
-                                        <svg
-                                          className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 5l7 7-7 7"
-                                          />
-                                        </svg>
-                                      </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
                               </div>
                             )}
                           </div>
                         </div>
                       ))}
+                      </div>
                     </div>
                   )}
                 </div>
