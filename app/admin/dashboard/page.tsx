@@ -392,13 +392,13 @@ export default function AdminDashboard() {
                           </th>
                           <th
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
                             Professores
                           </th>
                           <th
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
                             Alunos
                           </th>
@@ -416,14 +416,14 @@ export default function AdminDashboard() {
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                               {turma.nome}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {turma.professores.length > 0
                                 ? turma.professores
                                     .map((p) => p.usuario.nome)
                                     .join(", ")
                                 : "Nenhum professor"}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {turmasComTotalAlunos.find(
                                 (t) => t.id === turma.id
                               )?.totalAlunosAtivos || 0}

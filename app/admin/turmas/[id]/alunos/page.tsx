@@ -16,6 +16,7 @@ export default function AlunosPorTurmaPage() {
   const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [turma, setTurma] = useState<Turma | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingTurma, setLoadingTurma] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
@@ -39,6 +40,7 @@ export default function AlunosPorTurmaPage() {
   }, [router, turmaId]);
 
   const loadTurmaData = async () => {
+    setLoadingTurma(true);
     try {
       const result = await fetchTurmas();
       if (result.success && result.data) {
@@ -47,6 +49,8 @@ export default function AlunosPorTurmaPage() {
       }
     } catch (err) {
       console.error("Erro ao carregar dados da turma:", err);
+    } finally {
+      setLoadingTurma(false);
     }
   };
 
@@ -151,7 +155,7 @@ export default function AlunosPorTurmaPage() {
                     />
                   </svg>
                   <span className="ml-1 text-sm font-medium text-gray-500 md:ml-2">
-                    {turma ? turma.nome : `Turma ${turmaId}`}
+                    {loadingTurma ? "Carregando..." : turma ? turma.nome : "Turma"}
                   </span>
                 </div>
               </li>
@@ -183,7 +187,7 @@ export default function AlunosPorTurmaPage() {
           {/* Cabeçalho */}
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {turma ? turma.nome : turmaId}
+              {loadingTurma ? "Carregando turma..." : turma ? turma.nome : "Turma"}
             </h1>
           </div>
 
