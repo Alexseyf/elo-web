@@ -290,7 +290,6 @@ export default function NovoPage() {
               >
                 ☰
               </button>
-              <h1 className="text-3xl font-bold text-gray-800">Novo Diário</h1>
             </div>
           </div>
         </div>
@@ -305,8 +304,8 @@ export default function NovoPage() {
           {!alunoSelecionado ? (
             <div className="p-4 md:p-6 max-w-6xl mx-auto w-full">
               <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
-                <h1 className="text-2xl font-bold text-gray-800 mb-6">
-                  Selecione um aluno
+                <h1 className="text-lg md:text-2xl font-bold text-gray-800 mb-6">
+                  Diários
                 </h1>
                 
                 <div className="mb-6">
