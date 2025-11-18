@@ -84,3 +84,50 @@ export async function fetchUsuariosAtivos(): Promise<{
     };
   }
 }
+
+export async function fetchUsuarioDetalhes(usuarioId: number): Promise<{
+  success: boolean;
+  data?: Usuario;
+  error?: string;
+}> {
+  try {
+    const token = getAuthToken();
+    
+    if (!token) {
+      return {
+        success: false,
+        error: 'Usuário não autenticado'
+      };
+    }
+    
+    const response = await fetch(`${config.API_URL}/usuarios/${usuarioId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return {
+        success: false,
+        error: errorData.message || `Erro ao buscar usuário: ${response.status}`
+      };
+    }
+    
+    const usuario: Usuario = await response.json();
+    
+    return {
+      success: true,
+      data: usuario
+    };
+  } catch (error) {
+    console.error('Erro ao buscar detalhes do usuário:', error);
+    
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erro desconhecido ao buscar detalhes do usuário'
+    };
+  }
+}

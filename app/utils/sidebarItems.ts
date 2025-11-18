@@ -32,7 +32,7 @@ export function getProfessorSidebarItems(): SidebarItem[] {
   ];
 }
 
-export function getDiarioSidebarItems(role: string): SidebarItem[] {
+export function getSidebarItems(role: string): SidebarItem[] {
   switch (role) {
     case "ADMIN":
       return [

@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Usuario } from '../utils/usuarios';
 
 interface UsersTableProps {
@@ -11,6 +12,7 @@ interface UsersTableProps {
 }
 
 export default function UsersTable({ title, users, loading, error, onRetry }: UsersTableProps) {
+  const router = useRouter();
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="bg-gray-100 px-4 sm:px-6 py-3 border-b">
@@ -75,12 +77,20 @@ export default function UsersTable({ title, users, loading, error, onRetry }: Us
                     )}
                   </td>
                   <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
-                    <button
-                      className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-2 py-1 rounded text-xs"
-                      onClick={() => {/* Implementar edição */}}
-                    >
-                      Editar
-                    </button>
+                    <div className="flex gap-2 justify-end flex-wrap">
+                      <button
+                        className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-2 py-1 rounded text-xs"
+                        onClick={() => router.push(`/admin/usuarios/${usuario.id}`)}
+                      >
+                        Detalhes
+                      </button>
+                      <button
+                        className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-2 py-1 rounded text-xs"
+                        onClick={() => {/* Implementar edição */}}
+                      >
+                        Editar
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

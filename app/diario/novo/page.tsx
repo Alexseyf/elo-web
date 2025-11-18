@@ -11,7 +11,7 @@ import {
 } from '@/utils/auth';
 import { getTurmasProfessor, type TurmaProfessor, type Aluno as AlunoProf } from '@/utils/professores';
 import { verificarRegistroDiarioAluno } from '@/utils/alunos';
-import { getDiarioSidebarItems } from '@/utils/sidebarItems';
+import { getSidebarItems } from '@/utils/sidebarItems';
 import DiarioStepper from '../components/DiarioStepper';
 import type { DiarioFormData } from '@/types/diario';
 import { formatarNomeTurma } from '@/utils/turmas';
@@ -30,7 +30,7 @@ export default function NovoPage() {
   const [loadingAlunos, setLoadingAlunos] = useState(false);
   const [alunosComDiario, setAlunosComDiario] = useState<Set<number>>(new Set());
   const [loadingDiariosStatus, setLoadingDiariosStatus] = useState(false);
-  const [sidebarItems, setSidebarItems] = useState<ReturnType<typeof getDiarioSidebarItems>>([]);
+  const [sidebarItems, setSidebarItems] = useState<ReturnType<typeof getSidebarItems>>([]);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -42,7 +42,7 @@ export default function NovoPage() {
     setUserData(user);
 
     if (user?.roles?.[0]) {
-      setSidebarItems(getDiarioSidebarItems(user.roles[0]));
+      setSidebarItems(getSidebarItems(user.roles[0]));
     }
     
     if (user && user.id) {

@@ -8,7 +8,7 @@ import {
   getAuthUser,
   handleLogout,
 } from '@/app/utils/auth';
-import { getDiarioSidebarItems } from '@/app/utils/sidebarItems';
+import { getSidebarItems } from '@/app/utils/sidebarItems';
 import DiarioStepper from '../components/DiarioStepper';
 import type { DiarioFormData } from '@/app/lib/types/diario';
 
@@ -23,7 +23,7 @@ export default function EditarPage({ params }: { params: Promise<{ id: string }>
   const [userData, setUserData] = useState<any>(null);
   const [activeSection, setActiveSection] = useState('diarios');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [sidebarItems, setSidebarItems] = useState<ReturnType<typeof getDiarioSidebarItems>>([]);
+  const [sidebarItems, setSidebarItems] = useState<ReturnType<typeof getSidebarItems>>([]);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -35,7 +35,7 @@ export default function EditarPage({ params }: { params: Promise<{ id: string }>
     setUserData(user);
 
     if (user?.roles?.[0]) {
-      setSidebarItems(getDiarioSidebarItems(user.roles[0]));
+      setSidebarItems(getSidebarItems(user.roles[0]));
     }
     
     loadDiario();

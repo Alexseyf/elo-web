@@ -9,7 +9,7 @@ import {
   getAuthUser,
   handleLogout,
 } from '@/app/utils/auth';
-import { getDiarioSidebarItems } from '@/app/utils/sidebarItems';
+import { getSidebarItems } from '@/app/utils/sidebarItems';
 
 interface DiarioCard {
   id: string;
@@ -28,7 +28,7 @@ export default function DiarioPage() {
   const [userData, setUserData] = useState<any>(null);
   const [activeSection, setActiveSection] = useState('diarios');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [sidebarItems, setSidebarItems] = useState<ReturnType<typeof getDiarioSidebarItems>>([]);
+  const [sidebarItems, setSidebarItems] = useState<ReturnType<typeof getSidebarItems>>([]);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -40,7 +40,7 @@ export default function DiarioPage() {
     setUserData(user);
 
     if (user?.roles?.[0]) {
-      setSidebarItems(getDiarioSidebarItems(user.roles[0]));
+      setSidebarItems(getSidebarItems(user.roles[0]));
     }
     
     loadDiarios();
