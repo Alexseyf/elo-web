@@ -95,14 +95,14 @@ export default function EditarUsuario() {
             <h1 className="text-3xl font-bold text-gray-900 mb-6">
               Editar Usuário
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-8">
               Esta página será implementada em breve. 
               <br />
               Você pode editar as informações do usuário aqui.
             </p>
             <button
               onClick={() => router.back()}
-              className="rounded bg-gray-600 px-4 py-2 text-white hover:bg-gray-700 transition-colors"
+              className="rounded bg-gray-600 hover:bg-gray-700 px-4 sm:px-6 py-2 sm:py-2.5 text-white font-semibold transition-colors text-sm sm:text-base"
             >
               Voltar
             </button>

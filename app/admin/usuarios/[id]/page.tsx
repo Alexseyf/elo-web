@@ -190,10 +190,6 @@ export default function DetalhesUsuario() {
                   </h2>
                   <div className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium text-gray-600">ID</label>
-                      <p className="text-gray-900 mt-1">{usuario.id}</p>
-                    </div>
-                    <div>
                       <label className="text-sm font-medium text-gray-600">Email</label>
                       <p className="text-gray-900 mt-1">{usuario.email}</p>
                     </div>
@@ -203,74 +199,19 @@ export default function DetalhesUsuario() {
                     </div>
                   </div>
                 </div>
-
-                {/* Card de Status */}
-                <div className="bg-white rounded-lg shadow-md p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                    Status
-                  </h2>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Ativo</label>
-                      <p className="text-gray-900 mt-1">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${
-                          usuario.isAtivo
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}>
-                          {usuario.isAtivo ? 'Sim' : 'Não'}
-                        </span>
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Primeiro Acesso</label>
-                      <p className="text-gray-900 mt-1">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${
-                          usuario.primeiroAcesso
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {usuario.primeiroAcesso ? 'Pendente' : 'Concluído'}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Card de Permissões */}
-                <div className="bg-white rounded-lg shadow-md p-6 md:col-span-2">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                    Funções e Permissões
-                  </h2>
-                  <div className="space-y-3">
-                    {usuario.roles.length > 0 ? (
-                      usuario.roles.map((role) => (
-                        <div
-                          key={role}
-                          className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-200"
-                        >
-                          <div className="h-3 w-3 rounded-full bg-blue-500 mr-3"></div>
-                          <span className="text-gray-900 font-medium">{translateRole(role)}</span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-600">Nenhuma função atribuída</p>
-                    )}
-                  </div>
-                </div>
               </div>
 
               {/* Botões de ação */}
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button
                   onClick={() => router.back()}
-                  className="rounded bg-gray-600 px-4 py-2 text-white hover:bg-gray-700 transition-colors"
+                  className="rounded bg-gray-600 hover:bg-gray-700 px-4 sm:px-6 py-2 sm:py-2.5 text-white font-semibold transition-colors text-sm sm:text-base"
                 >
                   Voltar
                 </button>
                 <button
                   onClick={() => router.push(`/admin/usuarios/${usuario.id}/editar`)}
-                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors"
+                  className="rounded bg-blue-600 hover:bg-blue-700 px-4 sm:px-6 py-2 sm:py-2.5 text-white font-semibold transition-colors text-sm sm:text-base"
                 >
                   Editar Usuário
                 </button>
