@@ -142,7 +142,7 @@ export default function ProfessorDashboard() {
                 Visualize e gerencie todas as suas turmas.
               </p>
               <button
-                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto"
                 onClick={() => {
                   /* Implementar navegação para turmas */
                 }}
@@ -168,7 +168,7 @@ export default function ProfessorDashboard() {
                   Registre atividades realizadas em sala.
                 </p>
                 <button
-                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto"
                   onClick={() => {
                     router.push('/professor/atividades/cadastrar');
                   }}
@@ -194,7 +194,7 @@ export default function ProfessorDashboard() {
                 Visualize e gerencie todos os alunos das suas turmas.
               </p>
               <button
-                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto"
                 onClick={() => {
                   router.push('/professor/alunos');
                 }}
@@ -214,15 +214,15 @@ export default function ProfessorDashboard() {
               <p className="mb-4 text-gray-600">
                 Acompanhe e gerencie os diários de classe das suas turmas.
               </p>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:w-fit">
                 <button
-                  className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                  className="sm:flex-none flex-1 rounded bg-green-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-green-700 active:bg-green-800 transition-colors"
                   onClick={() => router.push('/diario/novo')}
                 >
                   Registrar Novo Diário
                 </button>
                 <button
-                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  className="sm:flex-none flex-1 rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors"
                   onClick={() => router.push('/diario')}
                 >
                   Visualizar Diários
@@ -244,7 +244,7 @@ export default function ProfessorDashboard() {
                 <p className="mb-4 text-gray-600">
                   Visualize e gerencie o calendário escolar das suas turmas.
                 </p>
-                <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                <button className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto">
                   Adicionar Evento
                 </button>
               </div>
@@ -254,7 +254,7 @@ export default function ProfessorDashboard() {
                   Visualize e gerencie eventos da turma (Reuniões, passeios...).
                 </p>
                 <button
-                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto"
                   onClick={() => {
                     /* Implementar gerenciamento de eventos */
                   }}
@@ -277,7 +277,7 @@ export default function ProfessorDashboard() {
               <p className="mb-4 text-gray-600">
                 Configure e acompanhe o cronograma anual de atividades.
               </p>
-              <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+              <button className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto">
                 Visualizar Cronograma
               </button>
             </div>
@@ -297,7 +297,7 @@ export default function ProfessorDashboard() {
                   Pareceres descritivos dos alunos.
                 </p>
                 <button
-                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto"
                   onClick={() => {
                     /* Implementar gerenciamento de pareceres */
                   }}
@@ -312,7 +312,7 @@ export default function ProfessorDashboard() {
                   Relatório de frequência das turmas.
                 </p>
                 <button
-                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto"
                   onClick={() => {
                     /* Implementar gerenciamento de frequência */
                   }}
