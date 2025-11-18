@@ -281,6 +281,20 @@ export default function NovoPage() {
       />
 
       <div className="flex-1 flex flex-col">
+        <div className="bg-white shadow-sm sticky top-0 z-10">
+          <div className="px-4 py-6">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-2 hover:bg-gray-100 rounded"
+              >
+                ☰
+              </button>
+              <h1 className="text-3xl font-bold text-gray-800">Novo Diário</h1>
+            </div>
+          </div>
+        </div>
+
         {error && (
           <div className="bg-red-500 text-white px-6 py-3 shadow-lg">
             {error}
@@ -289,17 +303,13 @@ export default function NovoPage() {
         
         <div className="flex-1">
           {!alunoSelecionado ? (
-            <div className="p-6 max-w-6xl mx-auto">
-              <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="p-4 md:p-6 max-w-6xl mx-auto w-full">
+              <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
                 <h1 className="text-2xl font-bold text-gray-800 mb-6">
-                  Novo Diário
+                  Selecione um aluno
                 </h1>
                 
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Selecione o aluno para o diário:
-                  </label>
-                  
                   {loadingAlunos ? (
                     <div className="flex items-center justify-center p-4">
                       <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
@@ -323,25 +333,25 @@ export default function NovoPage() {
                       {turmas.map(turma => (
                         <div key={turma.id} className="border border-gray-200 rounded-lg overflow-hidden">
                           {/* Card da Turma */}
-                          <div className="bg-blue-50 border-b border-blue-200 px-4 py-3">
-                            <div className="flex items-center justify-between">
-                              <h3 className="text-lg font-semibold text-blue-800">
+                          <div className="bg-blue-50 border-b border-blue-200 px-3 md:px-4 py-3">
+                            <div className="flex items-center justify-between gap-2">
+                              <h3 className="text-base md:text-lg font-semibold text-blue-800 truncate">
                                 {formatarNomeTurma(turma.nome)}
                               </h3>
-                              <span className="text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                              <span className="text-xs md:text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded-full whitespace-nowrap">
                                 {turma.alunos.length} aluno{turma.alunos.length !== 1 ? 's' : ''}
                               </span>
                             </div>
                           </div>
                           
                           {/* Lista de Cards dos Alunos */}
-                          <div className="p-4">
+                          <div className="p-3 md:p-4">
                             {turma.alunos.length === 0 ? (
                               <p className="text-gray-500 text-center py-4">
                                 Nenhum aluno nesta turma
                               </p>
                             ) : (
-                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
                                 {turma.alunos.map(aluno => {
                                   const temDiario = alunosComDiario.has(aluno.id);
                                   return (
@@ -351,21 +361,21 @@ export default function NovoPage() {
                                         ...aluno,
                                         turma: { id: turma.id, nome: turma.nome }
                                       } as AlunoProf & { turma: { id: number; nome: string } })}
-                                      className={`relative bg-white border rounded-lg p-4 transition-all cursor-pointer group ${
+                                      className={`relative bg-white border rounded-lg p-3 md:p-4 transition-all cursor-pointer group ${
                                         temDiario
                                           ? 'border-green-200 bg-green-50 cursor-default hover:shadow-none'
                                           : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
                                       }`}
                                     >
-                                      <div className="flex items-center space-x-3">
+                                      <div className="flex items-center space-x-2 md:space-x-3">
                                         <div className="flex-shrink-0">
-                                          <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+                                          <div className={`w-8 md:w-10 h-8 md:h-10 rounded-full flex items-center justify-center transition-colors ${
                                             temDiario
                                               ? 'bg-green-100'
                                               : 'bg-blue-100 group-hover:bg-blue-200'
                                           }`}>
                                             <svg
-                                              className={`w-5 h-5 ${
+                                              className={`w-4 md:w-5 h-4 md:h-5 ${
                                                 temDiario ? 'text-green-600' : 'text-blue-600'
                                               }`}
                                               fill="none"
@@ -382,19 +392,19 @@ export default function NovoPage() {
                                           </div>
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                          <p className={`text-sm font-medium truncate ${
+                                          <p className={`text-xs md:text-sm font-medium truncate ${
                                             temDiario ? 'text-gray-600' : 'text-gray-900'
                                           }`}>
                                             {aluno.nome}
                                           </p>
                                           {aluno.email && (
-                                            <p className="text-xs text-gray-500 truncate">
+                                            <p className="text-xs text-gray-500 truncate hidden md:block">
                                               {aluno.email}
                                             </p>
                                           )}
                                         </div>
                                         {!temDiario && (
-                                          <div className="flex-shrink-0">
+                                          <div className="flex-shrink-0 hidden md:block">
                                             <svg
                                               className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors"
                                               fill="none"

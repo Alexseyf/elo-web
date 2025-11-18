@@ -407,47 +407,55 @@ export default function Sono({ value, onChange }: SonoProps) {
       {value.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
-            <h3 className="text-lg font-semibold text-gray-800">Períodos registrados ({value.length})</h3>
+            <h3 className="text-base md:text-lg font-semibold text-gray-800">
+              <span className="md:hidden">Registrados</span>
+              <span className="hidden md:inline">Períodos registrados</span>
+            </h3>
           </div>
           
           <div className="grid gap-3">
             {value.map((period, index) => (
-              <div key={period.id} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold text-sm">
+              <div key={period.id} className="bg-white border border-gray-200 rounded-xl p-3 md:p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between gap-3 md:gap-4">
+                  <div className="flex items-start gap-3 md:gap-4 flex-1 min-w-0">
+                    <div className="w-8 h-8 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold text-sm mt-1">
                       {index + 1}
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="inline-flex items-center gap-1 text-lg font-semibold text-gray-800">
-                          {period.horaDormiu}
-                        </span>
-                        <span className="text-gray-400">→</span>
-                        <span className="inline-flex items-center gap-1 text-lg font-semibold text-gray-800">
-                          {period.horaAcordou}
-                        </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm md:text-lg font-semibold text-gray-800">
+                            {period.horaDormiu}
+                          </span>
+                          <span className="text-gray-400">→</span>
+                          <span className="text-sm md:text-lg font-semibold text-gray-800">
+                            {period.horaAcordou}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="flex items-center gap-1 text-xs md:text-sm text-gray-600">
+                        <svg className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                         </svg>
-                        <span className="font-medium">Duração: {formatDuration(period.tempoTotal)}</span>
+                        <span className="font-medium">
+                          <span className="hidden sm:inline">Duração: </span>
+                          {formatDuration(period.tempoTotal)}
+                        </span>
                       </div>
                     </div>
                   </div>
                   
                   <button
                     onClick={() => handleRemoveSleep(period.id)}
-                    className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all"
+                    className="flex-shrink-0 p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all"
+                    title="Remover período"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Remover
                   </button>
                 </div>
               </div>
