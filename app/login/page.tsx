@@ -125,7 +125,7 @@ export default function Login() {
           </button>
           
           <div className="mt-4 text-center">
-            <a href="#" className="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+            <a href="/recuperar-senha" className="text-sm text-blue-600 hover:text-blue-800 hover:underline">
               Esqueceu a senha?
             </a>
           </div>
