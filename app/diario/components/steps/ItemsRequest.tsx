@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 interface ItemsRequestProps {
   value?: string[];
   onChange: (items: string[]) => void;
@@ -17,7 +15,6 @@ const AVAILABLE_ITEMS = [
 ];
 
 export default function ItemsRequest({ value = [], onChange }: ItemsRequestProps) {
-  const [customItem, setCustomItem] = useState('');
   const selectedItems = Array.isArray(value) ? value : [];
 
   const handleToggleItem = (item: string) => {
@@ -25,13 +22,6 @@ export default function ItemsRequest({ value = [], onChange }: ItemsRequestProps
       onChange(selectedItems.filter((i) => i !== item));
     } else {
       onChange([...selectedItems, item]);
-    }
-  };
-
-  const handleAddCustom = () => {
-    if (customItem.trim() && !selectedItems.includes(customItem.trim())) {
-      onChange([...selectedItems, customItem.trim()]);
-      setCustomItem('');
     }
   };
 
@@ -88,27 +78,6 @@ export default function ItemsRequest({ value = [], onChange }: ItemsRequestProps
               </button>
             );
           })}
-        </div>
-      </div>
-
-      <div className="bg-gray-50 p-3 md:p-4 rounded-lg">
-        <h3 className="font-medium text-gray-700 mb-2 md:mb-3 text-sm md:text-base">Adicionar outro item:</h3>
-        <div className="flex gap-2 flex-col md:flex-row">
-          <input
-            type="text"
-            value={customItem}
-            onChange={(e) => setCustomItem(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleAddCustom()}
-            placeholder="Digite o nome do item"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <button
-            onClick={handleAddCustom}
-            disabled={!customItem.trim()}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white px-4 py-2 rounded-lg font-medium transition"
-          >
-            Adicionar
-          </button>
         </div>
       </div>
 

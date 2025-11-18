@@ -7,11 +7,13 @@ import {
   isAuthenticated,
   getAuthUser,
   handleLogout,
+  getAuthToken,
 } from '@/utils/auth';
 import { getTurmasProfessor, type TurmaProfessor, type Aluno as AlunoProf } from '@/utils/professores';
 import DiarioStepper from '../components/DiarioStepper';
 import type { DiarioFormData } from '@/types/diario';
 import { formatarNomeTurma } from '@/utils/turmas';
+import config from '@/config';
 
 export default function NovoPage() {
   const router = useRouter();
@@ -84,36 +86,133 @@ export default function NovoPage() {
     }
   };
 
+  const formatPeriodosSono = (periodos: any[]) => {
+    return periodos
+      .filter(periodo => periodo.saved)
+      .map(periodo => ({
+        horaDormiu: periodo.horaDormiu,
+        horaAcordou: periodo.horaAcordou,
+        tempoTotal: periodo.tempoTotal
+      }));
+  };
+
+  const ITENS_PROVIDENCIA_VALIDOS = [
+    'FRALDA',
+    'LENCO_UMEDECIDO',
+    'LEITE',
+    'CREME_DENTAL',
+    'ESCOVA_DE_DENTE',
+    'POMADA'
+  ];
+
+  const ItensProvidencia = (itens: string[]): string[] => {
+    if (!Array.isArray(itens)) {
+      return [];
+    }
+    return itens.filter(item => ITENS_PROVIDENCIA_VALIDOS.includes(item));
+  };
+
   const handleSubmit = async (data: DiarioFormData) => {
+    if (!alunoSelecionado?.id) {
+      setError('Aluno não selecionado');
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
 
-      // TODO: Implementar chamada à API
-      // const response = await fetch('/api/diario', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(data),
-      // });
+      const token = getAuthToken();
+      if (!token) {
+        setError('Sessão expirada. Por favor, faça login novamente.');
+        setTimeout(() => {
+          localStorage.removeItem('@auth_token');
+          localStorage.removeItem('@user_data');
+          localStorage.removeItem('@user_id');
+          router.push('/login');
+        }, 2000);
+        return;
+      }
 
-      // if (!response.ok) {
-      //   throw new Error('Erro ao salvar diário');
-      // }
+      const dadosParaEnviar = {
+        alunoId: alunoSelecionado.id,
+        data: new Date().toISOString(),
+        lancheManha: data.cafeDaManha,
+        almoco: data.almoco,
+        lancheTarde: data.lancheDaTarde,
+        leite: data.leite,
+        evacuacao: data.evacuacao,
+        disposicao: data.disposicao,
+        periodosSono: formatPeriodosSono(data.sono),
+        itensProvidencia: ItensProvidencia(data.itensRequisitados),
+        observacoes: data.observacoes || ''
+      };
 
-      // Simulação de sucesso
-      console.log('Diário salvo:', data);
+      console.log('Enviando dados:', dadosParaEnviar);
 
-      // Mostrar notificação de sucesso (implementar conforme seu sistema)
-      alert('Diário salvo com sucesso!');
+      const response = await fetch(`${config.API_URL}/diarios`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(dadosParaEnviar)
+      });
 
-      // Redirecionar para dashboard
-      router.push('/diario');
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Erro ao salvar diário';
-      setError(message);
-      console.error('Erro:', err);
+      const responseData = await response.json().catch(() => null);
+
+      if (response.ok) {
+        console.log('Diário salvo com sucesso:', responseData);
+
+        window.location.href = '/diario/novo';
+      } else {
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('@auth_token');
+          localStorage.removeItem('@user_data');
+          localStorage.removeItem('@user_id');
+          setError('Sessão expirada. Por favor, faça login novamente.');
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+          return;
+        }
+
+        let errorMessage = 'Não foi possível salvar o diário.';
+        let detalhesErro = null;
+        
+        if (responseData) {
+          if (typeof responseData.erro === 'string') {
+            errorMessage = responseData.erro;
+          } else if (responseData.erro && typeof responseData.erro === 'object') {
+            if (responseData.erro.name === 'ZodError' && responseData.erro.issues) {
+              const primeiroErro = responseData.erro.issues[0];
+              errorMessage = `Erro de validação: ${primeiroErro.message || 'Dados inválidos'}`;
+              if (primeiroErro.path && primeiroErro.path.length > 0) {
+                errorMessage += ` (Campo: ${primeiroErro.path.join('.')})`;
+              }
+              detalhesErro = responseData.erro.issues;
+            } else {
+              errorMessage = 'Erro de validação nos dados enviados.';
+              detalhesErro = responseData.erro;
+            }
+            console.error('Detalhes do erro de validação:', detalhesErro);
+          } else if (responseData.message) {
+            errorMessage = responseData.message;
+          } else if (responseData.detalhes) {
+            errorMessage = responseData.detalhes;
+          }
+        }
+
+        setError(errorMessage);
+        console.error('Erro ao salvar diário:', { 
+          status: response.status, 
+          mensagem: errorMessage,
+          detalhes: detalhesErro 
+        });
+      }
+    } catch (error) {
+      console.error('Erro inesperado:', error);
+      setError('Erro de conexão. Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.');
     } finally {
       setIsLoading(false);
     }
