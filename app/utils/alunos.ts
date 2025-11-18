@@ -142,3 +142,31 @@ export async function createAluno(data: CreateAlunoData): Promise<CreateAlunoRes
   }
 }
 
+export async function getAlunosByTurma(turmaId: number): Promise<Aluno[]> {
+  try {
+    const token = getAuthToken();
+
+    const response = await fetch(`${config.API_URL}/turmas/${turmaId}/alunos`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        console.error('Unauthorized access');
+        return [];
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data as Aluno[];
+  } catch (error) {
+    console.error('Error fetching alunos by turma:', error);
+    return [];
+  }
+}
+

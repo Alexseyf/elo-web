@@ -196,7 +196,7 @@ export default function ProfessorDashboard() {
               <button
                 className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                 onClick={() => {
-                  /* Implementar listagem de alunos */
+                  router.push('/professor/alunos');
                 }}
               >
                 Ver Alunos
@@ -214,9 +214,20 @@ export default function ProfessorDashboard() {
               <p className="mb-4 text-gray-600">
                 Acompanhe e gerencie os diários de classe das suas turmas.
               </p>
-              <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-                Visualizar Diários
-              </button>
+              <div className="flex gap-3">
+                <button
+                  className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                  onClick={() => router.push('/diario/novo')}
+                >
+                  Registrar Novo Diário
+                </button>
+                <button
+                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  onClick={() => router.push('/diario')}
+                >
+                  Visualizar Diários
+                </button>
+              </div>
             </div>
           </section>
 

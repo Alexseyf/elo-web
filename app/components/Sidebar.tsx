@@ -1,4 +1,6 @@
 import { SidebarHeader } from "./index";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface SidebarProps {
   items: Array<{
@@ -26,17 +28,25 @@ export function Sidebar({
   userData,
   onLogout,
 }: SidebarProps) {
+  const router = useRouter();
+
+  const handleNavigation = (item: { id: string; href: string }) => {
+    setMobileMenuOpen(false);
+    if (item.href.startsWith('/')) {
+      router.push(item.href);
+    } else {
+      setActiveSection(item.id);
+    }
+  };
+
   return (
     <>
-      {/* Overlay para fechar o menu em dispositivos móveis */}
       {mobileMenuOpen && (
         <div
           className="fixed inset-0 bg-gray-800 bg-opacity-50 z-20 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         ></div>
       )}
-
-      {/* Menu lateral */}
       <aside
         className={`${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
@@ -51,21 +61,16 @@ export function Sidebar({
           <ul>
             {items.map((item) => (
               <li key={item.id} className="mb-1">
-                <a
-                  href={item.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setActiveSection(item.id);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`block rounded-md px-4 py-2 text-sm transition-colors ${
+                <button
+                  onClick={() => handleNavigation(item)}
+                  className={`w-full text-left rounded-md px-4 py-2 text-sm transition-colors ${
                     activeSection === item.id
                       ? "bg-blue-100 text-blue-700 font-medium"
                       : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   {item.label}
-                </a>
+                </button>
               </li>
             ))}
           </ul>

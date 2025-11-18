@@ -441,18 +441,10 @@ export default function AdminDashboard() {
                                 <button
                                   className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-2 py-1 rounded text-xs"
                                   onClick={() => {
-                                    /* Implementar visualização detalhada */
+                                    router.push(`/admin/turmas/${turma.id}/alunos`);
                                   }}
                                 >
                                   Detalhes
-                                </button>
-                                <button
-                                  className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-2 py-1 rounded text-xs"
-                                  onClick={() => {
-                                    /* Implementar edição */
-                                  }}
-                                >
-                                  Editar
                                 </button>
                               </div>
                             </td>
@@ -473,7 +465,10 @@ export default function AdminDashboard() {
             <h2 className="mb-6 text-xl font-semibold">Diários</h2>
             <div className="rounded-lg bg-white p-6 shadow">
               <p className="mb-4">Acompanhe e gerencie os diários de classe.</p>
-              <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+              <button 
+                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                onClick={() => router.push("/diario")}
+              >
                 Visualizar Diários
               </button>
             </div>
