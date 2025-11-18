@@ -8,8 +8,8 @@ interface ObservacoesProps {
 export default function Observacoes({ value, onChange }: ObservacoesProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-800">Recados</h2>
-      <p className="text-gray-600">Deixe observações ou recados importantes.</p>
+      <h2 className="hidden md:block text-xl font-semibold text-gray-800">Recados</h2>
+      <p className="text-xs md:text-base text-gray-600">Deixe observações ou recados importantes.</p>
 
       <textarea
         value={value}

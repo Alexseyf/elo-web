@@ -32,12 +32,12 @@ export default function ItemsRequest({ value = [], onChange }: ItemsRequestProps
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-gray-800">Itens Requisitados</h2>
-        <p className="text-gray-600 text-sm mt-1">Selecione os itens que precisam ser providenciados para a criança.</p>
+        <h2 className="hidden md:block text-xl font-semibold text-gray-800">Itens Requisitados</h2>
+        <p className="text-xs md:text-sm text-gray-600 mt-1">Selecione os itens que precisam ser providenciados para a criança.</p>
       </div>
 
       <div>
-        <h3 className="font-medium text-gray-700 mb-3">Itens disponíveis:</h3>
+        <h3 className="text-xs md:text-sm font-medium text-gray-700 mb-3">Itens disponíveis:</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-2">
           {AVAILABLE_ITEMS.map((item) => {
             const isSelected = selectedItems.includes(item.id);

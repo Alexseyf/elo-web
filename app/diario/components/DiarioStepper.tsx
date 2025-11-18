@@ -91,10 +91,10 @@ export default function DiarioStepper({
           <div className="max-w-4xl mx-auto">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-800">
+                <h1 className="hidden md:block text-3xl font-bold text-gray-800">
                   {editMode ? 'Editar Diário' : 'Novo Diário'}
                 </h1>
-                {alunoNome && <p className="text-gray-600 mt-2 font-semibold">Aluno: {alunoNome}</p>}
+                {alunoNome && <p className="text-gray-600 mt-2 font-semibold">{alunoNome}</p>}
                 <p className="text-gray-500 mt-1 text-sm">{step.title}</p>
               </div>
               {onTrocarAluno && (

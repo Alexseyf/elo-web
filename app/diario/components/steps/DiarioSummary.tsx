@@ -47,7 +47,7 @@ export default function DiarioSummary({ data }: DiarioSummaryProps) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-800">Resumo do Diário</h2>
+      <h2 className="hidden md:block text-2xl font-bold text-gray-800">Resumo do Diário</h2>
       <p className="text-gray-600">Revise os dados antes de salvar.</p>
 
       {/* Refeições */}

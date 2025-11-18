@@ -137,7 +137,7 @@ export default function Sono({ value, onChange }: SonoProps) {
 
   return (
     <div className="space-y-3 md:space-y-6">
-      <h2 className="text-xl font-semibold text-gray-800">Sono</h2>
+      <h2 className="hidden md:block text-xl font-semibold text-gray-800">Sono</h2>
       <p className="text-gray-600 hidden md:block">Registre os períodos de sono da criança.</p>
       <div className="bg-blue-50 p-6 rounded-lg space-y-6">
         <h3 className="font-semibold text-gray-700 hidden md:block">Adicionar período de sono</h3>
@@ -145,7 +145,7 @@ export default function Sono({ value, onChange }: SonoProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
-                <h4 className="text-lg font-semibold text-gray-800">Dormiu às</h4>
+                <h4 className="text-sm md:text-lg font-semibold text-gray-800">Dormiu</h4>
               </div>
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="text-center">
@@ -229,7 +229,7 @@ export default function Sono({ value, onChange }: SonoProps) {
             </div>
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
-                <h4 className="text-lg font-semibold text-gray-800">Acordou às</h4>
+                <h4 className="text-sm md:text-lg font-semibold text-gray-800">Acordou</h4>
               </div>
               
               <div className="bg-gray-50 rounded-lg p-4">
@@ -399,7 +399,7 @@ export default function Sono({ value, onChange }: SonoProps) {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            <span className="md:hidden">Adicionar período</span>
+            <span className="md:hidden text-sm">Adicionar</span>
             <span className="hidden md:inline">Adicionar período de sono</span>
           </div>
         </button>
