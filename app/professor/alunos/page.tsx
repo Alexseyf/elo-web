@@ -9,7 +9,7 @@ import {
 } from "../../utils/professores";
 import { getAuthUser, handleLogout, checkUserRole } from "../../utils/auth";
 import { formatarNomeTurma } from "../../utils/turmas";
-import { Sidebar } from "../../components";
+import { Sidebar, CustomSelect } from "../../components";
 
 export default function AlunosProfessorPage() {
   const router = useRouter();
@@ -235,22 +235,23 @@ export default function AlunosProfessorPage() {
                 </div>
 
                 <div className="sm:w-48">
-                  <select
+                  <CustomSelect
+                    id="turma-select"
+                    name="turma"
                     value={selectedTurma || ""}
                     onChange={(e) =>
                       setSelectedTurma(
                         e.target.value ? Number(e.target.value) : null
                       )
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Todas as turmas</option>
-                    {turmas.map((turma) => (
-                      <option key={turma.id} value={turma.id}>
-                        {formatarNomeTurma(turma.nome)}
-                      </option>
-                    ))}
-                  </select>
+                    options={[
+                      { value: "", label: "Todas as turmas" },
+                      ...turmas.map((turma) => ({
+                        value: turma.id,
+                        label: formatarNomeTurma(turma.nome),
+                      })),
+                    ]}
+                  />
                 </div>
 
                 {(searchTerm || selectedTurma) && (
@@ -321,25 +322,22 @@ export default function AlunosProfessorPage() {
                     </div>
 
                     {turma.alunos && turma.alunos.length > 0 ? (
-                      <div className="overflow-x-auto">
+                      <div>
                         <table className="min-w-full divide-y divide-gray-200">
                           <thead className="bg-gray-50">
                             <tr>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              <th className="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Nome
                               </th>
                               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Data de Nascimento
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
                               </th>
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
                             {turma.alunos.map((aluno) => (
                               <tr key={aluno.id} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 whitespace-nowrap">
+                                <td className="px-3 md:px-6 py-4 whitespace-nowrap">
                                   <div className="flex items-center">
                                     <div className="flex-shrink-0 h-10 w-10">
                                       <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
@@ -348,12 +346,12 @@ export default function AlunosProfessorPage() {
                                         </span>
                                       </div>
                                     </div>
-                                    <div className="ml-4">
+                                    <div className="ml-2 md:ml-4">
                                       <div className="text-sm font-medium text-gray-900">
                                         {aluno.nome}
                                       </div>
                                       {aluno.email && (
-                                        <div className="text-sm text-gray-500">
+                                        <div className="text-xs md:text-sm text-gray-500">
                                           {aluno.email}
                                         </div>
                                       )}
@@ -362,19 +360,6 @@ export default function AlunosProfessorPage() {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                   {formatarData(aluno.dataNascimento || "")}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <span
-                                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                      aluno.ativo !== false
-                                        ? "bg-green-100 text-green-800"
-                                        : "bg-red-100 text-red-800"
-                                    }`}
-                                  >
-                                    {aluno.ativo !== false
-                                      ? "Ativo"
-                                      : "Inativo"}
-                                  </span>
                                 </td>
                               </tr>
                             ))}
