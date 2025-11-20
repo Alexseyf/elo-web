@@ -34,6 +34,7 @@ export default function AdminDashboard() {
   const [errorUsuarios, setErrorUsuarios] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadingAlunosChart, setLoadingAlunosChart] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   const sidebarItems = getAdminSidebarItems();
@@ -85,6 +86,7 @@ export default function AdminDashboard() {
   };
 
   const loadTotalAlunosPorTurma = async () => {
+    setLoadingAlunosChart(true);
     try {
       const result = await fetchTotalAlunosPorTurma();
 
@@ -95,6 +97,8 @@ export default function AdminDashboard() {
       }
     } catch (err) {
       console.error("Erro inesperado ao carregar total de alunos:", err);
+    } finally {
+      setLoadingAlunosChart(false);
     }
   };
 
@@ -224,6 +228,10 @@ export default function AdminDashboard() {
                   Tentar novamente
                 </button>
               </div>
+            ) : loadingAlunosChart ? (
+              <div className="flex justify-center p-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
             ) : turmasComTotalAlunos.length > 0 ? (
               <AlunosChart data={turmasComTotalAlunos} />
             ) : (
@@ -233,9 +241,9 @@ export default function AdminDashboard() {
                 </p>
                 <button
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-                  onClick={() => router.push("/admin/turmas/cadastrar")}
+                  onClick={() => setActiveSection("visao-geral")}
                 >
-                  Criar primeira turma
+                  ← Voltar
                 </button>
               </div>
             )}
@@ -508,39 +516,54 @@ export default function AdminDashboard() {
             <h2 className="mb-6 text-xl font-semibold">
               Atividades Pedagógicas
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="rounded-lg bg-white p-6 shadow">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="rounded-lg bg-white p-6 shadow flex flex-col h-full">
+                <h3 className="text-lg font-medium mb-4">
+                  Visualizar Atividades
+                </h3>
+                <p className="mb-6 text-gray-600 flex-grow">
+                  Acompanhe todas as atividades pedagógicas cadastradas.
+                </p>
+                <button
+                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 w-full"
+                  onClick={() => router.push("/admin/atividades")}
+                >
+                  Visualizar Atividades
+                </button>
+              </div>
+
+              <div className="rounded-lg bg-white p-6 shadow flex flex-col h-full">
                 <h3 className="text-lg font-medium mb-4">
                   Campos de Experiência
                 </h3>
-                <p className="mb-4 text-gray-600">
+                <p className="mb-6 text-gray-600 flex-grow">
                   Gerencie os campos de experiência.
                 </p>
                 <button
-                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 w-full"
                   onClick={() => router.push("/admin/campos-experiencia")}
                 >
                   Gerenciar Campos
                 </button>
               </div>
 
-              <div className="rounded-lg bg-white p-6 shadow">
+              <div className="rounded-lg bg-white p-6 shadow flex flex-col h-full">
                 <h3 className="text-lg font-medium mb-4">Objetivos</h3>
-                <p className="mb-4 text-gray-600">
+                <p className="mb-6 text-gray-600 flex-grow">
                   Gerencie os objetivos pedagógicos.
                 </p>
-                <div className="flex gap-4">
+                <div className="flex gap-2 flex-col sm:flex-row">
                 <button
-                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 flex-1 text-sm"
                   onClick={() => router.push("/admin/objetivos/cadastrar")}
                 >
-                  Gerenciar Objetivos
+                  Cadastrar
                 </button>
                 <button
-                  className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                  className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700 flex-1 text-sm"
                   onClick={() => router.push("/admin/objetivos/listar")}
                 >
-                  Listar Objetivos
+                  Listar
                 </button>
                 </div>
 

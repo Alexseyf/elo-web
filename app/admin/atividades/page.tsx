@@ -101,7 +101,9 @@ export default function AdminAtividades() {
       <Sidebar
         items={sidebarItems}
         activeSection="atividades"
-        setActiveSection={() => {}}
+        setActiveSection={(section) => {
+          router.push(`/admin/dashboard?section=${section}`);
+        }}
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
         userData={userData}

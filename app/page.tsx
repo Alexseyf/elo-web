@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { isAuthenticated, getAuthUser } from './utils/auth';
-import config from '../config';
 
 export default function Home() {
   const router = useRouter();
@@ -86,14 +85,14 @@ export default function Home() {
           <h1 className="text-2xl font-bold mb-4">Bem-vindo ao ELO Escola</h1>
           <p className="mb-6">Aguarde enquanto você é redirecionado...</p>
           
-          <div className="flex gap-4 justify-center sm:justify-start">
+          {/* <div className="flex gap-4 justify-center sm:justify-start">
             <button 
               onClick={() => router.push('/login')}
               className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
             >
               Ir para Login
             </button>
-          </div>
+          </div> */}
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
