@@ -2,17 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { handleLogin, checkApiConnection } from '../utils/auth';
+import { handleLogin } from '../utils/auth';
 import Image from 'next/image';
-import config from '../../config';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [apiStatus, setApiStatus] = useState<string | null>(null);
-  const [showApiInfo, setShowApiInfo] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,17 +50,6 @@ export default function Login() {
       console.error(err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const checkConnection = async () => {
-    setApiStatus('Verificando conexão...');
-    try {
-      const result = await checkApiConnection();
-      setApiStatus(result.message);
-    } catch (error) {
-      setApiStatus('Erro ao verificar conexão');
-      console.error(error);
     }
   };
 
@@ -130,34 +116,6 @@ export default function Login() {
             </a>
           </div>
         </form>
-        
-        {/* <div className="mt-6 pt-4 border-t border-gray-200">
-          <button 
-            onClick={() => setShowApiInfo(!showApiInfo)}
-            className="text-sm text-gray-600 hover:text-blue-600"
-          >
-            {showApiInfo ? 'Ocultar informações de diagnóstico' : 'Mostrar informações de diagnóstico'}
-          </button>
-          
-          {showApiInfo && (
-            <div className="mt-3 text-sm">
-              <p className="mb-2"><strong>URL da API:</strong> {config.API_URL}</p>
-              <p className="mb-2"><strong>Variável de ambiente:</strong> {process.env.NEXT_PUBLIC_API_URL || 'não definida'}</p>
-              <button
-                onClick={checkConnection}
-                className="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-300 text-sm"
-              >
-                Verificar conexão
-              </button>
-              
-              {apiStatus && (
-                <div className={`mt-2 p-2 rounded-md ${apiStatus.includes('sucesso') ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'}`}>
-                  {apiStatus}
-                </div>
-              )}
-            </div>
-          )}
-        </div> */}
       </div>
     </div>
   );

@@ -3,30 +3,16 @@
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { isAuthenticated, getAuthUser, checkApiConnection } from './utils/auth';
+import { isAuthenticated, getAuthUser } from './utils/auth';
 import config from '../config';
 
 export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuthAndRedirect = async () => {
       try {
-        try {
-          const apiConnection = await checkApiConnection();
-          if (!apiConnection.success) {
-            setApiError(apiConnection.message);
-            setLoading(false);
-            return;
-          }
-        } catch (error) {
-          console.error('Erro ao verificar API:', error);
-          setApiError('Erro ao verificar conexão com o servidor');
-          setLoading(false);
-          return;
-        }
         if (isAuthenticated()) {
           try {
             const userData = getAuthUser();
@@ -55,8 +41,7 @@ export default function Home() {
           router.push('/login');
         }
       } catch (error) {
-        console.error('Erro ao verificar API:', error);
-        setApiError('Erro ao verificar conexão com o servidor');
+        console.error('Erro ao verificar autenticação:', error);
         setLoading(false);
       }
     };
@@ -70,7 +55,7 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [router]);
 
-  if (loading && !apiError) {
+  if (loading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
         <Image
@@ -82,43 +67,6 @@ export default function Home() {
           priority
         />
         <p className="text-gray-600">Carregando...</p>
-      </div>
-    );
-  }
-
-  if (apiError) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <Image
-          className="mb-8"
-          src="/logo.png"
-          alt="Elo Escola"
-          width={120}
-          height={30}
-          priority
-        />
-        <div className="bg-red-50 border border-red-200 rounded-md p-4 max-w-md">
-          <h2 className="text-red-700 text-lg font-semibold mb-2">Erro de conexão</h2>
-          <p className="text-red-600 mb-4">{apiError}</p>
-          <div className="bg-gray-50 p-3 rounded text-sm">
-            <p className="font-medium mb-1">Informações de depuração:</p>
-            <p>API URL: {config.API_URL}</p>
-          </div>
-          <div className="flex mt-4 gap-2">
-            <button 
-              onClick={() => window.location.reload()}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              Tentar novamente
-            </button>
-            <button 
-              onClick={() => router.push('/login')}
-              className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
-            >
-              Ir para Login
-            </button>
-          </div>
-        </div>
       </div>
     );
   }
