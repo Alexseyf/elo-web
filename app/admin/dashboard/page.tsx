@@ -59,7 +59,7 @@ export default function AdminDashboard() {
       loadTotalAlunosPorTurma();
     } else if (activeSection === "usuarios") {
       loadUsuarios();
-    } else if (activeSection === "graficos") {
+    } else if (activeSection === "graficos-alunos") {
       loadTotalAlunosPorTurma();
     }
   }, [activeSection]);
@@ -176,26 +176,21 @@ export default function AdminDashboard() {
               Visão Geral
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="rounded-lg bg-white p-4 md:p-6 shadow">
-                <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">
-                  Bem-vindo ao Dashboard
-                </h3>
-                <p className="text-gray-600 text-sm md:text-base">
-                  Aqui você pode gerenciar todos os aspectos do sistema.
-                </p>
-              </div>
 
-              <div className="rounded-lg bg-white p-4 md:p-6 shadow">
+                <button
+                onClick={() => setActiveSection("graficos-atividades")}
+                className="rounded-lg bg-white p-4 md:p-6 shadow hover:shadow-lg transition-shadow text-left"
+              >
                 <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">
-                  Atividades Recentes
+                  Atividades Pedagógicas
                 </h3>
                 <p className="text-gray-600 text-sm md:text-base">
-                  Visualize as últimas atividades do sistema.
+                  Visualize as atividades pedagógicas do sistema.
                 </p>
-              </div>
+              </button>
 
               <button
-                onClick={() => setActiveSection("graficos")}
+                onClick={() => setActiveSection("graficos-alunos")}
                 className="rounded-lg bg-white p-4 md:p-6 shadow hover:shadow-lg transition-shadow text-left"
               >
                 <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">
@@ -209,8 +204,8 @@ export default function AdminDashboard() {
           </section>
 
           <section
-            id="graficos"
-            className={activeSection === "graficos" ? "block" : "hidden"}
+            id="graficos-alunos"
+            className={activeSection === "graficos-alunos" ? "block" : "hidden"}
           >
             <h2 className="mb-4 md:mb-6 text-lg md:text-xl font-semibold">
               Estatísticas de Alunos
