@@ -2,28 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
 import {
-  isAuthenticated,
   getAuthUser,
   handleLogout,
   checkUserRole,
 } from "../../utils/auth";
-import { SidebarHeader, UsersTable, Sidebar } from "../../components";
+import { UsersTable, Sidebar } from "../../components";
 import {
   fetchTurmas,
   Turma,
   TurmaComTotalAlunos,
-  formatarNomeTurma,
   fetchTotalAlunosPorTurma,
 } from "../../utils/turmas";
 import {
   fetchUsuariosAtivos,
-  Usuario,
   UsuariosPorRole,
 } from "../../utils/usuarios";
 import { getAdminSidebarItems } from "../../utils/sidebarItems";
+import AlunosChart from "../components/AlunosChart";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -63,6 +59,8 @@ export default function AdminDashboard() {
       loadTotalAlunosPorTurma();
     } else if (activeSection === "usuarios") {
       loadUsuarios();
+    } else if (activeSection === "graficos") {
+      loadTotalAlunosPorTurma();
     }
   }, [activeSection]);
 
@@ -146,7 +144,7 @@ export default function AdminDashboard() {
 
       {/* Conteúdo principal */}
       <div className="flex-1">
-        <header className="bg-white shadow-sm p-4 flex items-center justify-between md:hidden">
+        <header className="bg-white shadow-sm p-4 flex items-center justify-between lg:hidden">
           {/* Botão do menu em dispositivos móveis */}
           <button
             className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -196,15 +194,56 @@ export default function AdminDashboard() {
                 </p>
               </div>
 
-              <div className="rounded-lg bg-white p-4 md:p-6 shadow">
+              <button
+                onClick={() => setActiveSection("graficos")}
+                className="rounded-lg bg-white p-4 md:p-6 shadow hover:shadow-lg transition-shadow text-left"
+              >
                 <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">
                   Estatísticas
                 </h3>
                 <p className="text-gray-600 text-sm md:text-base">
                   Resumo dos principais números do sistema.
                 </p>
-              </div>
+              </button>
             </div>
+          </section>
+
+          <section
+            id="graficos"
+            className={activeSection === "graficos" ? "block" : "hidden"}
+          >
+            <h2 className="mb-4 md:mb-6 text-lg md:text-xl font-semibold">
+              Estatísticas de Alunos
+            </h2>
+            {loading ? (
+              <div className="flex justify-center p-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
+            ) : error ? (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+                <p>{error}</p>
+                <button
+                  onClick={() => loadTotalAlunosPorTurma()}
+                  className="mt-2 text-sm underline hover:text-red-800"
+                >
+                  Tentar novamente
+                </button>
+              </div>
+            ) : turmasComTotalAlunos.length > 0 ? (
+              <AlunosChart data={turmasComTotalAlunos} />
+            ) : (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                <p className="text-gray-600 mb-4">
+                  Nenhuma turma com dados disponível
+                </p>
+                <button
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+                  onClick={() => router.push("/admin/turmas/cadastrar")}
+                >
+                  Criar primeira turma
+                </button>
+              </div>
+            )}
           </section>
 
           {/* Lista usuários do sistema - UsersTable.tsx */}
