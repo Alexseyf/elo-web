@@ -43,7 +43,7 @@ const CustomBarTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => 
     return (
       <div className="bg-white p-2 border border-gray-300 rounded shadow-lg">
         <p className="text-sm font-medium">{`${payload[0].payload.nome}`}</p>
-        <p className="text-sm text-blue-600">{`Total: ${payload[0].value}`}</p>
+        <p className="text-sm text-blue-600">{`${payload[0].value} alunos`}</p>
       </div>
     );
   }
