@@ -178,6 +178,46 @@ export async function createAtividade(data: CreateAtividadeData): Promise<Create
   }
 }
 
+export async function fetchAtividades(): Promise<{ success: boolean; data?: Atividade[]; error?: string }> {
+  try {
+    const token = getAuthToken();
+    const response = await fetch(`${config.API_URL}/atividades`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        return {
+          success: false,
+          error: 'Não autorizado'
+        };
+      }
+
+      const errorData = await response.json().catch(() => null);
+      return {
+        success: false,
+        error: errorData?.message || `Erro ao buscar atividades: ${response.status}`
+      };
+    }
+
+    const responseData = await response.json();
+    return {
+      success: true,
+      data: responseData.atividades || responseData
+    };
+  } catch (error) {
+    console.error('Error fetching atividades:', error);
+    return {
+      success: false,
+      error: 'Erro ao buscar atividades'
+    };
+  }
+}
+
 export function getValidPeriodos(): SEMESTRE[] {
   return Object.values(SEMESTRE);
 }
