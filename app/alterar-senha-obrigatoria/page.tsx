@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
+import { usePreventBackNavigation } from '../hooks';
 import config from '../../config';
 
 function AlterarSenhaObrigatoriaForm() {
@@ -16,6 +17,9 @@ function AlterarSenhaObrigatoriaForm() {
   
   const userId = searchParams?.get('userId');
   const senhaAtual = searchParams?.get('senhaAtual');
+  
+  // PREVINE QUE USUARIOS RETORNEM À PÁGINA DE LOGIN APÓS LOGAR
+  usePreventBackNavigation();
   
   useEffect(() => {
     if (!userId || !senhaAtual) {

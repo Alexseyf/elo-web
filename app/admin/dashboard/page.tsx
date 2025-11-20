@@ -7,6 +7,7 @@ import {
   handleLogout,
   checkUserRole,
 } from "../../utils/auth";
+import { usePreventBackNavigation } from "../../hooks";
 import { UsersTable, Sidebar } from "../../components";
 import {
   fetchTurmas,
@@ -38,6 +39,9 @@ export default function AdminDashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   const sidebarItems = getAdminSidebarItems();
+
+  // PREVINE QUE USUARIOS RETORNEM À PÁGINA DE LOGIN APÓS LOGAR
+  usePreventBackNavigation();
 
   useEffect(() => {
     if (checkUserRole(router, "ADMIN")) {

@@ -8,6 +8,7 @@ import {
   handleLogout,
   checkUserRole,
 } from "../../utils/auth";
+import { usePreventBackNavigation } from "../../hooks";
 import { Sidebar } from "../../components";
 import { getProfessorSidebarItems } from "../../utils/sidebarItems";
 
@@ -18,6 +19,9 @@ export default function ProfessorDashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   const sidebarItems = getProfessorSidebarItems();
+
+  // PREVINE QUE USUARIOS RETORNEM À PÁGINA DE LOGIN APÓS LOGAR
+  usePreventBackNavigation();
 
   useEffect(() => {
     if (checkUserRole(router, "PROFESSOR")) {

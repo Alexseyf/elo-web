@@ -3,10 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { isAuthenticated, getAuthUser, handleLogout, checkUserRole } from '../../utils/auth';
+import { usePreventBackNavigation } from '../../hooks';
 
 export default function ResponsavelDashboard() {
   const router = useRouter();
   const [userData, setUserData] = useState<any>(null);
+
+  // PREVINE QUE USUARIOS RETORNEM À PÁGINA DE LOGIN APÓS LOGAR
+  usePreventBackNavigation();
 
   useEffect(() => {
     if (checkUserRole(router, 'RESPONSAVEL')) {
