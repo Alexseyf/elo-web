@@ -17,11 +17,15 @@ export interface Atividade {
   turmaId: number;
   campoExperiencia: CAMPO_EXPERIENCIA;
   objetivoId: number;
+  professorId: number;
   isAtivo: boolean;
-  profesor?: {
+  createdAt?: string;
+  updatedAt?: string;
+  professor?: {
     id: number;
     nome: string;
     email: string;
+    telefone?: string;
   };
   turma?: {
     id: number;
@@ -214,6 +218,53 @@ export async function fetchAtividades(): Promise<{ success: boolean; data?: Ativ
     return {
       success: false,
       error: 'Erro ao buscar atividades'
+    };
+  }
+}
+
+export async function fetchAtividadeDetalhes(id: number): Promise<{ success: boolean; data?: Atividade; error?: string }> {
+  try {
+    const token = getAuthToken();
+    const response = await fetch(`${config.API_URL}/atividades/${id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        return {
+          success: false,
+          error: 'Não autorizado'
+        };
+      }
+
+      if (response.status === 404) {
+        return {
+          success: false,
+          error: 'Atividade não encontrada'
+        };
+      }
+
+      const errorData = await response.json().catch(() => null);
+      return {
+        success: false,
+        error: errorData?.message || `Erro ao buscar atividade: ${response.status}`
+      };
+    }
+
+    const responseData = await response.json();
+    return {
+      success: true,
+      data: responseData.atividade || responseData
+    };
+  } catch (error) {
+    console.error('Error fetching atividade detalhes:', error);
+    return {
+      success: false,
+      error: 'Erro ao buscar detalhes da atividade'
     };
   }
 }
