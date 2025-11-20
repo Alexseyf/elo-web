@@ -38,6 +38,18 @@ const CustomPieTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => 
   return null;
 };
 
+const CustomBarTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-2 border border-gray-300 rounded shadow-lg">
+        <p className="text-sm font-medium">{`${payload[0].payload.nome}`}</p>
+        <p className="text-sm text-blue-600">{`Total: ${payload[0].value}`}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function AlunosChart({ data }: AlunosChartProps) {
   if (!data || data.length === 0) {
     return (
@@ -88,10 +100,7 @@ export default function AlunosChart({ data }: AlunosChartProps) {
                 tick={{ fontSize: 12 }}
               />
               <YAxis />
-              <Tooltip 
-                formatter={(value) => `${value} alunos`}
-                cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
-              />
+              <Tooltip content={<CustomBarTooltip />} />
               <Bar dataKey="totalAlunosAtivos" fill="#3b82f6" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
