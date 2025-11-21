@@ -209,9 +209,15 @@ export async function fetchAtividades(): Promise<{ success: boolean; data?: Ativ
     }
 
     const responseData = await response.json();
+    const atividades = responseData.atividades || responseData;
+    const atividadesMapeadas = atividades.map((atividade: any) => ({
+      ...atividade,
+      turmaId: atividade.turmaId || atividade.turma_id || atividade.turma?.id || 0
+    }));
+    
     return {
       success: true,
-      data: responseData.atividades || responseData
+      data: atividadesMapeadas
     };
   } catch (error) {
     console.error('Error fetching atividades:', error);

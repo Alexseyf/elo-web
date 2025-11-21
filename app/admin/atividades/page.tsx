@@ -75,10 +75,11 @@ export default function AdminAtividades() {
 
   const getAtividadesFiltradas = () => {
     return atividades.filter((atividade) => {
-      if (filtroTurma && atividade.turmaId !== Number(filtroTurma)) return false;
-      if (filtroAno && atividade.ano !== filtroAno) return false;
-      if (filtroPeriodo && atividade.periodo !== filtroPeriodo) return false;
-      return true;
+      const turmaMatch = !filtroTurma || String(atividade.turmaId) === filtroTurma;
+      const anoMatch = !filtroAno || atividade.ano === filtroAno;
+      const periodoMatch = !filtroPeriodo || atividade.periodo === filtroPeriodo;
+      
+      return turmaMatch && anoMatch && periodoMatch;
     });
   };
 
