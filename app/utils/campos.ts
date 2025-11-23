@@ -158,6 +158,75 @@ export async function mapearCampoExperienciaParaId(nomeCampo: CAMPO_EXPERIENCIA)
   }
 }
 
+export interface DetalheTurmaRelatorio {
+  turmaId: number;
+  turma: string;
+  total: number;
+}
+
+export interface CampoExperienciaRelatorio {
+  campoExperiencia: CAMPO_EXPERIENCIA;
+  totalGeral: number;
+  detalhesPorTurma: DetalheTurmaRelatorio[];
+}
+
+export interface ResumoRelatorio {
+  totalAtividades: number;
+  totalCampos: number;
+}
+
+export interface RelatorioAtividadesCampoExperiencia {
+  resumo: ResumoRelatorio;
+  relatorio: CampoExperienciaRelatorio[];
+}
+
+export interface GetRelatorioAtividadesResult {
+  success: boolean;
+  message: string;
+  data?: RelatorioAtividadesCampoExperiencia;
+}
+
+export async function getRelatorioAtividadesPorCampoExperiencia(): Promise<GetRelatorioAtividadesResult> {
+  try {
+    const token = getAuthToken();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/atividades/relatorio/campo-experiencia`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        return {
+          success: false,
+          message: 'Não autorizado'
+        };
+      }
+      
+      const errorData = await response.json().catch(() => null);
+      return {
+        success: false,
+        message: errorData?.message || `Erro ao buscar relatório de atividades: ${response.status}`
+      };
+    }
+
+    const responseData = await response.json();
+    return {
+      success: true,
+      message: 'Relatório de atividades obtido com sucesso',
+      data: responseData
+    };
+  } catch (error) {
+    console.error('Error fetching relatório de atividades por campo de experiência:', error);
+    return {
+      success: false,
+      message: 'Erro ao buscar relatório de atividades'
+    };
+  }
+}
+
 export function limparCachesCampos(): void {
   camposCache = null;
 }

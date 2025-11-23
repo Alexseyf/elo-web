@@ -19,8 +19,10 @@ import {
   fetchUsuariosAtivos,
   UsuariosPorRole,
 } from "../../utils/usuarios";
+import { getRelatorioAtividadesPorCampoExperiencia, RelatorioAtividadesCampoExperiencia } from "../../utils/campos";
 import { getAdminSidebarItems } from "../../utils/sidebarItems";
 import AlunosChart from "../components/AlunosChart";
+import AtividadesChart from "../components/AtividadesChart";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -36,6 +38,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [loadingAlunosChart, setLoadingAlunosChart] = useState<boolean>(false);
+  const [relatorioAtividades, setRelatorioAtividades] = useState<RelatorioAtividadesCampoExperiencia | null>(null);
+  const [loadingAtividadesChart, setLoadingAtividadesChart] = useState<boolean>(false);
+  const [errorAtividades, setErrorAtividades] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   const sidebarItems = getAdminSidebarItems();
@@ -66,6 +71,8 @@ export default function AdminDashboard() {
       loadUsuarios();
     } else if (activeSection === "graficos-alunos") {
       loadTotalAlunosPorTurma();
+    } else if (activeSection === "graficos-atividades") {
+      loadAtividades();
     }
   }, [activeSection]);
 
@@ -126,6 +133,26 @@ export default function AdminDashboard() {
     }
   };
 
+  const loadAtividades = async () => {
+    setLoadingAtividadesChart(true);
+    setErrorAtividades(null);
+
+    try {
+      const result = await getRelatorioAtividadesPorCampoExperiencia();
+
+      if (result.success && result.data) {
+        setRelatorioAtividades(result.data);
+      } else {
+        setErrorAtividades(result.message || "Erro ao carregar relatório de atividades");
+      }
+    } catch (err) {
+      setErrorAtividades("Erro inesperado ao carregar relatório de atividades");
+      console.error(err);
+    } finally {
+      setLoadingAtividadesChart(false);
+    }
+  };
+
   const onLogout = () => {
     handleLogout();
   };
@@ -139,7 +166,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 relative">
+    <div className="flex min-h-screen bg-gray-50 relative w-full max-w-full overflow-x-hidden">
       <Sidebar
         items={sidebarItems}
         activeSection={activeSection}
@@ -151,7 +178,7 @@ export default function AdminDashboard() {
       />
 
       {/* Conteúdo principal */}
-      <div className="flex-1">
+      <div className="flex-1 w-full max-w-full">
         <header className="bg-white shadow-sm p-4 flex items-center justify-between lg:hidden">
           {/* Botão do menu em dispositivos móveis */}
           <button
@@ -175,7 +202,7 @@ export default function AdminDashboard() {
           </button>
         </header>
 
-        <main className="p-4 md:pt-6 lg:p-8">
+        <main className="p-2 sm:p-4 md:pt-6 lg:p-8 w-full max-w-full">
           <section
             id="visao-geral"
             className={activeSection === "visao-geral" ? "block" : "hidden"}
@@ -242,6 +269,44 @@ export default function AdminDashboard() {
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
                 <p className="text-gray-600 mb-4">
                   Nenhuma turma com dados disponível
+                </p>
+                <button
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+                  onClick={() => setActiveSection("visao-geral")}
+                >
+                  ← Voltar
+                </button>
+              </div>
+            )}
+          </section>
+
+          <section
+            id="graficos-atividades"
+            className={activeSection === "graficos-atividades" ? "block" : "hidden"}
+          >
+            <h2 className="mb-4 md:mb-6 text-lg md:text-xl font-semibold">
+              Estatísticas de Atividades Pedagógicas
+            </h2>
+            {loadingAtividadesChart ? (
+              <div className="flex justify-center p-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
+            ) : errorAtividades ? (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+                <p>{errorAtividades}</p>
+                <button
+                  onClick={() => loadAtividades()}
+                  className="mt-2 text-sm underline hover:text-red-800"
+                >
+                  Tentar novamente
+                </button>
+              </div>
+            ) : relatorioAtividades ? (
+              <AtividadesChart data={relatorioAtividades} />
+            ) : (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                <p className="text-gray-600 mb-4">
+                  Nenhuma atividade disponível para exibir
                 </p>
                 <button
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
