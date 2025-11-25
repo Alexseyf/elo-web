@@ -271,9 +271,12 @@ export default function ProfessorDashboard() {
             <div className="rounded-lg bg-white p-6 shadow">
               <h3 className="text-lg font-medium mb-4">Cronograma Anual</h3>
               <p className="mb-4 text-gray-600">
-                Configure e acompanhe o cronograma anual de atividades.
+                Acompanhe o cronograma anual de eventos da escola.
               </p>
-              <button className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto">
+              <button 
+                className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto"
+                onClick={() => router.push('/cronograma')}
+              >
                 Visualizar Cronograma
               </button>
             </div>

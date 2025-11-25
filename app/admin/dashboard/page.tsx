@@ -553,7 +553,6 @@ export default function AdminDashboard() {
                                   className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-2 py-1 rounded text-xs"
                                   onClick={() => {
                                     router.push(`/admin/turmas/${turma.id}/alunos`);
-                                    // TODO: IMPLEMENTAR DETALHES DA TURMA E AJUSTAR ROTA
                                   }}
                                 >
                                   Detalhes
@@ -667,12 +666,21 @@ export default function AdminDashboard() {
           >
             <h2 className="mb-6 text-xl font-semibold">Cronograma Anual</h2>
             <div className="rounded-lg bg-white p-6 shadow">
-              <p className="mb-4">
-                Configure o cronograma anual de atividades.
-              </p>
-              <button className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-                Definir Cronograma
-              </button>
+              <p className="mb-4">Gerencie o cronograma anual de eventos da escola.</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors duration-200"
+                  onClick={() => router.push("/cronograma/cadastrar")}
+                >
+                  Cadastrar Cronograma
+                </button>
+                <button
+                  className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700 transition-colors duration-200"
+                  onClick={() => router.push("/cronograma")}
+                >
+                  Visualizar Cronograma
+                </button>
+              </div>
             </div>
           </section>
         </main>
