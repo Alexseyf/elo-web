@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   getAuthUser,
@@ -16,7 +16,7 @@ import { getAdminSidebarItems } from "../../utils/sidebarItems";
 import { fetchTurmas, Turma, formatarNomeTurma } from "../../utils/turmas";
 import { formatarCampoExperiencia } from "../../utils/campos";
 
-export default function AdminAtividades() {
+function AdminAtividadesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [userData, setUserData] = useState<any>(null);
@@ -334,5 +334,13 @@ export default function AdminAtividades() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function AdminAtividades() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Carregando...</div>}>
+      <AdminAtividadesContent />
+    </Suspense>
   );
 }
