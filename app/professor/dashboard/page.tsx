@@ -64,7 +64,7 @@ export default function ProfessorDashboard() {
 
       {/* Conteúdo principal */}
       <div className="flex-1">
-        <header className="bg-white shadow-sm p-4 flex items-center justify-between md:hidden">
+        <header className="bg-white shadow-sm p-4 flex items-center justify-between lg:hidden">
           {/* Botão do menu em dispositivos móveis */}
           <button
             className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
