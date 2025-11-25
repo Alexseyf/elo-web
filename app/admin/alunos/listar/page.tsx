@@ -1,33 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   getAuthUser,
   handleLogout,
   checkUserRole,
-} from "../../utils/auth";
-import { Sidebar, CustomSelect } from "../../components";
-import {
-  fetchAtividades,
-  Atividade,
-} from "../../utils/atividades";
-import { getAdminSidebarItems } from "../../utils/sidebarItems";
-import { fetchTurmas, Turma, formatarNomeTurma } from "../../utils/turmas";
-import { formatarCampoExperiencia } from "../../utils/campos";
+} from "../../../utils/auth";
+import { Sidebar, CustomSelect } from "../../../components";
+import { getAlunos, Aluno } from "../../../utils/alunos";
+import { getAdminSidebarItems } from "../../../utils/sidebarItems";
+import { fetchTurmas, Turma, formatarNomeTurma } from "../../../utils/turmas";
 
-export default function AdminAtividades() {
+export default function ListarAlunos() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [userData, setUserData] = useState<any>(null);
-  const [atividades, setAtividades] = useState<Atividade[]>([]);
+  const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [turmas, setTurmas] = useState<Turma[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [filtroTurma, setFiltroTurma] = useState<number | string>("");
-  const [filtroAno, setFiltroAno] = useState<number>(new Date().getFullYear());
-  const [filtroPeriodo, setFiltroPeriodo] = useState<string>("");
+  const [buscaNome, setBuscaNome] = useState<string>("");
 
   const sidebarItems = getAdminSidebarItems();
 
@@ -35,17 +29,9 @@ export default function AdminAtividades() {
     if (checkUserRole(router, "ADMIN")) {
       setUserData(getAuthUser());
       loadTurmas();
-      loadAtividades();
+      loadAlunos();
     }
   }, [router]);
-
-  // Efeito para ler o turmaId da URL e pré-selecionar a turma
-  useEffect(() => {
-    const turmaId = searchParams.get("turmaId");
-    if (turmaId) {
-      setFiltroTurma(turmaId);
-    }
-  }, [searchParams]);
 
   const loadTurmas = async () => {
     try {
@@ -58,20 +44,15 @@ export default function AdminAtividades() {
     }
   };
 
-  const loadAtividades = async () => {
+  const loadAlunos = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const result = await fetchAtividades();
-
-      if (result.success && result.data) {
-        setAtividades(result.data);
-      } else {
-        setError(result.error || "Erro ao carregar atividades");
-      }
+      const data = await getAlunos();
+      setAlunos(data);
     } catch (err) {
-      setError("Erro inesperado ao carregar atividades");
+      setError("Erro inesperado ao carregar alunos");
       console.error(err);
     } finally {
       setLoading(false);
@@ -82,22 +63,17 @@ export default function AdminAtividades() {
     handleLogout();
   };
 
-  const getAtividadesFiltradas = () => {
-    return atividades.filter((atividade) => {
-      const turmaMatch = !filtroTurma || String(atividade.turmaId) === filtroTurma;
-      const anoMatch = !filtroAno || atividade.ano === filtroAno;
-      const periodoMatch = !filtroPeriodo || atividade.periodo === filtroPeriodo;
+  const getAlunosFiltrados = () => {
+    return alunos.filter((aluno) => {
+      const turmaMatch = !filtroTurma || String(aluno.turma?.id) === String(filtroTurma);
+      const nomeMatch = !buscaNome || 
+        aluno.nome.toLowerCase().includes(buscaNome.toLowerCase());
       
-      return turmaMatch && anoMatch && periodoMatch;
+      return turmaMatch && nomeMatch;
     });
   };
 
-  const formatarData = (data: string) => {
-    // Exibe a data sem conversão de fuso, formato DD/MM/YYYY
-    return data.slice(8, 10) + "/" + data.slice(5, 7) + "/" + data.slice(0, 4);
-  };
-
-  const atividadesFiltradas = getAtividadesFiltradas();
+  const alunosFiltrados = getAlunosFiltrados();
 
   if (!userData) {
     return (
@@ -111,7 +87,7 @@ export default function AdminAtividades() {
     <div className="flex min-h-screen bg-gray-50 relative">
       <Sidebar
         items={sidebarItems}
-        activeSection="atividades"
+        activeSection="alunos"
         setActiveSection={(section) => {
           router.push(`/admin/dashboard?section=${section}`);
         }}
@@ -148,16 +124,16 @@ export default function AdminAtividades() {
         <main className="p-4 md:pt-6 lg:p-8">
           <div className="mb-6">
             <h2 className="text-2xl md:text-3xl font-semibold text-gray-900">
-              Atividades Pedagógicas
+              Alunos
             </h2>
             <p className="text-sm md:text-base text-gray-600 mt-1">
-              Gerencie as atividades cadastradas no sistema
+              Visualize e gerencie os alunos cadastrados no sistema
             </p>
           </div>
 
           {/* Filtros */}
           <div className="bg-white rounded-lg shadow p-4 mb-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Turma
@@ -179,37 +155,16 @@ export default function AdminAtividades() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Ano
+                  Buscar por nome
                 </label>
-                <CustomSelect
-                  id="filtroAno"
-                  name="filtroAno"
-                  value={filtroAno}
-                  onChange={(e) => setFiltroAno(Number(e.target.value))}
-                  options={[
-                    { value: new Date().getFullYear(), label: new Date().getFullYear().toString() },
-                    ...Array.from({ length: 5 }, (_, i) => {
-                      const year = new Date().getFullYear() - i - 1;
-                      return { value: year, label: year.toString() };
-                    }),
-                  ]}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Período
-                </label>
-                <CustomSelect
-                  id="filtroPeriodo"
-                  name="filtroPeriodo"
-                  value={filtroPeriodo}
-                  onChange={(e) => setFiltroPeriodo(e.target.value)}
-                  options={[
-                    { value: "", label: "Todos os períodos" },
-                    { value: "PRIMEIRO_SEMESTRE", label: "1º Semestre" },
-                    { value: "SEGUNDO_SEMESTRE", label: "2º Semestre" },
-                  ]}
+                <input
+                  type="text"
+                  id="buscaNome"
+                  name="buscaNome"
+                  value={buscaNome}
+                  onChange={(e) => setBuscaNome(e.target.value)}
+                  placeholder="Digite o nome do aluno..."
+                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
 
@@ -217,8 +172,7 @@ export default function AdminAtividades() {
                 <button
                   onClick={() => {
                     setFiltroTurma("");
-                    setFiltroAno(new Date().getFullYear());
-                    setFiltroPeriodo("");
+                    setBuscaNome("");
                   }}
                   className="w-full rounded border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                 >
@@ -237,18 +191,18 @@ export default function AdminAtividades() {
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
               <p className="text-sm">{error}</p>
               <button
-                onClick={loadAtividades}
+                onClick={loadAlunos}
                 className="mt-2 text-sm underline hover:text-red-800"
               >
                 Tentar novamente
               </button>
             </div>
-          ) : atividadesFiltradas.length === 0 ? (
+          ) : alunosFiltrados.length === 0 ? (
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
               <p className="text-gray-600 mb-4">
-                {atividades.length === 0
-                  ? "Nenhuma atividade cadastrada"
-                  : "Nenhuma atividade corresponde aos filtros selecionados"}
+                {alunos.length === 0
+                  ? "Nenhum aluno cadastrado"
+                  : "Nenhum aluno corresponde aos filtros selecionados"}
               </p>
             </div>
           ) : (
@@ -260,7 +214,13 @@ export default function AdminAtividades() {
                       scope="col"
                       className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Campo
+                      Nome
+                    </th>
+                    <th
+                      scope="col"
+                      className="hidden sm:table-cell px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Matrícula
                     </th>
                     <th
                       scope="col"
@@ -270,15 +230,9 @@ export default function AdminAtividades() {
                     </th>
                     <th
                       scope="col"
-                      className="hidden sm:table-cell px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="hidden md:table-cell px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Data
-                    </th>
-                    <th
-                      scope="col"
-                      className="hidden md:table-cell px-4 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Horas
+                      Email
                     </th>
                     <th
                       scope="col"
@@ -289,30 +243,28 @@ export default function AdminAtividades() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {atividadesFiltradas.map((atividade) => (
-                    <tr key={atividade.id} className="hover:bg-gray-50">
-                      <td className="px-4 md:px-6 py-4 text-sm text-gray-600">
-                        <span className="inline-block max-w-xs text-xs">
-                          {formatarCampoExperiencia(atividade.campoExperiencia)}
-                        </span>
-                      </td>
+                  {alunosFiltrados.map((aluno) => (
+                    <tr key={aluno.id} className="hover:bg-gray-50">
                       <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {atividade.turma?.nome ? formatarNomeTurma(atividade.turma.nome) : "-"}
+                        {aluno.nome}
                       </td>
                       <td className="hidden sm:table-cell px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {formatarData(atividade.data)}
+                        {aluno.matricula}
                       </td>
-                      <td className="hidden md:table-cell px-4 md:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
-                        {atividade.quantHora}h
+                      <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {aluno.turma?.nome ? formatarNomeTurma(aluno.turma.nome) : "-"}
+                      </td>
+                      <td className="hidden md:table-cell px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {aluno.email || "-"}
                       </td>
                       <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
-                          className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-2 py-1 rounded text-xs"
+                          className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-3 py-1.5 rounded text-xs font-medium transition-colors duration-200"
                           onClick={() =>
-                            router.push(`/admin/atividades/${atividade.id}`)
+                            router.push(`/admin/alunos/${aluno.id}`)
                           }
                         >
-                          Detalhar
+                          Ver Detalhes
                         </button>
                       </td>
                     </tr>
@@ -323,11 +275,11 @@ export default function AdminAtividades() {
           )}
 
           {/* Resumo */}
-          {atividadesFiltradas.length > 0 && (
+          {alunosFiltrados.length > 0 && (
             <div className="mt-4 text-sm text-gray-600">
               <p>
-                Exibindo <strong>{atividadesFiltradas.length}</strong> de{" "}
-                <strong>{atividades.length}</strong> atividades
+                Exibindo <strong>{alunosFiltrados.length}</strong> de{" "}
+                <strong>{alunos.length}</strong> alunos
               </p>
             </div>
           )}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sidebar } from '../../../components';
+import { Sidebar, CustomSelect } from '../../../components';
 import { checkUserRole, getAuthUser, handleLogout } from '../../../utils/auth';
 import { TURMA, cadastrarTurma, formatarNomeTurma } from '../../../utils/turmas';
 
@@ -149,22 +149,19 @@ export default function CadastrarTurma() {
                   Turma
                 </label>
                 <div className="mt-2">
-                  <select
+                  <CustomSelect
                     id="nome"
                     name="nome"
                     value={formData.nome}
                     onChange={handleInputChange}
-                    className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 ${
-                      errors.nome ? 'ring-red-500' : ''
-                    }`}
-                  >
-                    <option value="">Selecione uma turma</option>
-                    {Object.values(TURMA).map((turma) => (
-                      <option key={turma} value={turma}>
-                        {formatarNomeTurma(turma)}
-                      </option>
-                    ))}
-                  </select>
+                    options={[
+                      { value: "", label: "Selecione uma turma" },
+                      ...Object.values(TURMA).map((turma) => ({
+                        value: turma,
+                        label: formatarNomeTurma(turma)
+                      }))
+                    ]}
+                  />
                   {errors.nome && (
                     <p className="mt-2 text-sm text-red-600">{errors.nome}</p>
                   )}

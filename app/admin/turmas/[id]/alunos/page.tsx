@@ -320,7 +320,7 @@ export default function AlunosPorTurmaPage() {
                                 </button>
                                 <button
                                   className="text-green-600 hover:text-green-900 text-xs bg-green-100 hover:bg-green-200 px-2 py-1 rounded"
-                                  onClick={() => router.push(`/diario/${aluno.id}`)}
+                                  onClick={() => router.push(`/diario/visualizar/${aluno.id}`)}
                                 >
                                   Diário
                                 </button>

@@ -41,6 +41,10 @@ export default function VisualizarDiarioPage() {
     setIsLoading(false);
   };
 
+  const formatarData = (data: string) => {
+    return data.slice(8, 10) + "/" + data.slice(5, 7) + "/" + data.slice(0, 4);
+  };
+
   const onLogout = () => {
     handleLogout();
     router.push('/login');
@@ -86,7 +90,7 @@ export default function VisualizarDiarioPage() {
                 <div key={diario.id} className="bg-white rounded-lg shadow p-6 max-w-xl mx-auto">
                   <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                     <div>
-                      <span className="font-semibold text-gray-700">Data:</span> {new Date(diario.data).toLocaleDateString('pt-BR')}
+                      <span className="font-semibold text-gray-700">Data:</span> {formatarData(diario.data)}
                     </div>
                     <div>
                       <span className="font-semibold text-gray-700">Aluno:</span> {diario.aluno?.nome}

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   BarChart,
   Bar,
@@ -67,6 +68,8 @@ const CustomBarTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => 
 };
 
 export default function AtividadesChart({ data }: AtividadesChartProps) {
+  const router = useRouter();
+
   if (!data || !data.relatorio || data.relatorio.length === 0) {
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
@@ -116,7 +119,7 @@ export default function AtividadesChart({ data }: AtividadesChartProps) {
 
   return (
     <div className="space-y-4 w-full max-w-full overflow-x-hidden">
-      <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-1 sm:gap-4 w-full">
+      {/* <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-1 sm:gap-4 w-full">
         <div className="rounded-lg bg-white p-2 sm:p-4 shadow w-full max-w-full">
           <p className="text-sm font-medium text-gray-600">Total de Atividades</p>
           <p className="text-2xl md:text-3xl font-bold text-blue-600 mt-2">{totalAtividades}</p>
@@ -133,7 +136,7 @@ export default function AtividadesChart({ data }: AtividadesChartProps) {
           <p className="text-sm font-medium text-gray-600">Turmas Envolvidas</p>
           <p className="text-2xl md:text-3xl font-bold text-purple-600 mt-2">{totalTurmasUnicas}</p>
         </div>
-      </div>
+      </div> */}
 
       {/* Gráfico de barras - Total por campo de experiência */}
       <div className="rounded-lg bg-white p-2 sm:p-4 md:p-6 shadow w-full max-w-full">
@@ -145,14 +148,14 @@ export default function AtividadesChart({ data }: AtividadesChartProps) {
                 campo: formatarCampoExperiencia(campo.campoExperiencia),
                 total: campo.totalGeral
               }))} 
-              margin={{ top: 10, right: 10, left: 0, bottom: 30 }}
+              margin={{ top: 10, right: 50, left: 0, bottom: 10 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="campo"
-                angle={-45}
+                // angle={-45}
                 textAnchor="end"
-                height={100}
+                // height={100}
                 tick={false}
                 interval={0}
               />
@@ -187,7 +190,15 @@ export default function AtividadesChart({ data }: AtividadesChartProps) {
       {/* Gráficos por turma */}
       {turmasComCampos.map((turma, turmaIndex) => (
         <div key={turma.turmaId} className="rounded-lg bg-white p-2 sm:p-4 md:p-6 shadow">
-          <h3 className="mb-2 sm:mb-4 text-base sm:text-lg font-semibold">{turma.turma} - Distribuição por Campos</h3>
+          <div className="flex items-center justify-between mb-2 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-semibold">{turma.turma}</h3>
+            <button
+              onClick={() => router.push(`/admin/atividades?turmaId=${turma.turmaId}`)}
+              className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Detalhar
+            </button>
+          </div>
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 lg:gap-6">
             {/* Gráfico de Pizza */}
             <div className="w-full max-w-full">

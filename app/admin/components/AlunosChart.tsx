@@ -90,20 +90,35 @@ export default function AlunosChart({ data }: AlunosChartProps) {
         <h3 className="mb-4 text-lg font-semibold">Alunos por Turma</h3>
         <div className="overflow-x-auto">
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+            <BarChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="nome"
-                angle={-45}
                 textAnchor="end"
-                height={80}
-                tick={{ fontSize: 12 }}
+                tick={false}
+                interval={0}
               />
               <YAxis />
               <Tooltip content={<CustomBarTooltip />} />
-              <Bar dataKey="totalAlunosAtivos" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="totalAlunosAtivos" fill="#3b82f6" radius={[8, 8, 0, 0]}>
+                {data.map((entry, index) => (
+                  <Cell key={`bar-cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
+        </div>
+        {/* Legenda colorida das turmas */}
+        <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+          {data.map((turma, index) => (
+            <div key={turma.id} className="flex items-center gap-2">
+              <div
+                className="h-4 w-4 rounded-full flex-shrink-0"
+                style={{ backgroundColor: COLORS[index % COLORS.length] }}
+              />
+              <span className="text-sm text-gray-700">{turma.nome}</span>
+            </div>
+          ))}
         </div>
       </div>
 
