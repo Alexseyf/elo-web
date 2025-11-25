@@ -149,14 +149,16 @@ export default function CadastrarAtividade() {
       const dataAtividade = new Date(formData.data);
       const agora = new Date();
       dataAtividade.setHours(agora.getHours(), agora.getMinutes(), agora.getSeconds());
-      const dataFormatada = dataAtividade.toISOString();
+      // Formato da data ISO 8601 completo com 'Z' (UTC)
+      const dataFormatada = `${formData.data}T00:00:00.000Z`;
 
       const atividadeData: CreateAtividadeData = {
         ano: Number(formData.ano),
         periodo: formData.periodo as SEMESTRE,
         quantHora: Number(formData.quantHora),
         descricao: formData.descricao.trim(),
-        data: dataFormatada,
+        // Envia a data como 'YYYY-MM-DDT00:00:00.000Z'
+        data: formData.data + 'T00:00:00.000Z',
         turmaId: Number(formData.turmaId),
         campoExperiencia: formData.campoExperiencia as CAMPO_EXPERIENCIA,
         objetivoId: Number(formData.objetivoId),

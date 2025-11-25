@@ -84,7 +84,8 @@ export default function AdminAtividades() {
   };
 
   const formatarData = (data: string) => {
-    return new Date(data).toLocaleDateString("pt-BR");
+    // Exibe a data sem conversão de fuso, formato DD/MM/YYYY
+    return data.slice(8, 10) + "/" + data.slice(5, 7) + "/" + data.slice(0, 4);
   };
 
   const atividadesFiltradas = getAtividadesFiltradas();
