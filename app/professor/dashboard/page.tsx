@@ -131,14 +131,17 @@ export default function ProfessorDashboard() {
               Visão Geral
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="rounded-lg bg-white p-4 md:p-6 shadow">
+              <button
+                onClick={() => router.push("/professor/atividades")}
+                className="rounded-lg bg-white p-4 md:p-6 shadow hover:shadow-lg transition-shadow text-left"
+              >
                 <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">
                   Atividades Recentes
                 </h3>
                 <p className="text-gray-600 text-sm md:text-base">
                   Visualize as últimas atividades de suas turmas.
                 </p>
-              </div>
+              </button>
 
               <button
                 onClick={() => setActiveSection("estatisticas")}
