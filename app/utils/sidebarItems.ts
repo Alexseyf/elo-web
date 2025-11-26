@@ -27,7 +27,7 @@ export function getProfessorSidebarItems(): SidebarItem[] {
     { id: "alunos", label: "Alunos", href: "#alunos" },
     { id: "diarios", label: "Diários", href: "#diarios" },
     { id: "calendario", label: "Calendário", href: "#calendario" },
-    { id: "cronograma", label: "Cronograma", href: "#cronograma" },
+    { id: "cronograma", label: "Cronograma", href: "/cronograma" },
     { id: "relatorios", label: "Relatórios", href: "#relatorios" },
   ];
 }
@@ -53,7 +53,7 @@ export function getSidebarItems(role: string): SidebarItem[] {
         { id: "alunos", label: "Alunos", href: "/professor/dashboard?section=alunos" },
         { id: "diarios", label: "Diários", href: "/diario" },
         { id: "calendario", label: "Calendário", href: "/professor/dashboard?section=calendario" },
-        { id: "cronograma", label: "Cronograma", href: "/professor/dashboard?section=cronograma" },
+        { id: "cronograma", label: "Cronograma", href: "/cronograma" },
         { id: "relatorios", label: "Relatórios", href: "/professor/dashboard?section=relatorios" },
       ];
     default:
