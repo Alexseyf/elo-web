@@ -11,17 +11,29 @@ import {
 import { usePreventBackNavigation } from "../../hooks";
 import { Sidebar } from "../../components";
 import { getProfessorSidebarItems } from "../../utils/sidebarItems";
+import { 
+  fetchProfessorTurmaAtividades, 
+  TurmaAtividade, 
+  TurmaInfo 
+} from "../../utils/atividades";
+import AtividadesChart from "../components/AtividadesChart";
+
 
 export default function ProfessorDashboard() {
   const router = useRouter();
   const [userData, setUserData] = useState<any>(null);
   const [activeSection, setActiveSection] = useState("visao-geral");
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [turmas, setTurmas] = useState<TurmaInfo[]>([]);
+  const [atividades, setAtividades] = useState<TurmaAtividade[]>([]);
+  const [loadingAtividades, setLoadingAtividades] = useState<boolean>(false);
+  const [errorAtividades, setErrorAtividades] = useState<string>("");
 
   const sidebarItems = getProfessorSidebarItems();
 
   // PREVINE QUE USUARIOS RETORNEM À PÁGINA DE LOGIN APÓS LOGAR
   usePreventBackNavigation();
+
 
   useEffect(() => {
     if (checkUserRole(router, "PROFESSOR")) {
@@ -37,6 +49,29 @@ export default function ProfessorDashboard() {
       }
     }
   }, [router]);
+
+  useEffect(() => {
+    const loadAtividades = async () => {
+      if (!userData?.id) return;
+
+      setLoadingAtividades(true);
+      setErrorAtividades("");
+
+      const result = await fetchProfessorTurmaAtividades(userData.id);
+      
+      if (result.success && result.data) {
+        setTurmas(result.data.turmas);
+        setAtividades(result.data.atividades);
+      } else {
+        setErrorAtividades(result.error || "Erro ao carregar atividades");
+      }
+
+      setLoadingAtividades(false);
+    };
+
+    loadAtividades();
+  }, [userData]);
+
 
   const onLogout = () => {
     handleLogout();
@@ -98,15 +133,6 @@ export default function ProfessorDashboard() {
             <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-lg bg-white p-4 md:p-6 shadow">
                 <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">
-                  Bem-vindo ao Dashboard
-                </h3>
-                <p className="text-gray-600 text-sm md:text-base">
-                  Aqui você pode gerenciar suas turmas e alunos.
-                </p>
-              </div>
-
-              <div className="rounded-lg bg-white p-4 md:p-6 shadow">
-                <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">
                   Atividades Recentes
                 </h3>
                 <p className="text-gray-600 text-sm md:text-base">
@@ -114,14 +140,17 @@ export default function ProfessorDashboard() {
                 </p>
               </div>
 
-              <div className="rounded-lg bg-white p-4 md:p-6 shadow">
+              <button
+                onClick={() => setActiveSection("estatisticas")}
+                className="rounded-lg bg-white p-4 md:p-6 shadow hover:shadow-lg transition-shadow text-left"
+              >
                 <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold">
                   Estatísticas
                 </h3>
                 <p className="text-gray-600 text-sm md:text-base">
-                  Resumo dos dados de suas turmas e alunos.
+                  Visualize gráficos e estatísticas de suas atividades.
                 </p>
-              </div>
+              </button>
             </div>
           </section>
 
@@ -280,6 +309,26 @@ export default function ProfessorDashboard() {
                 Visualizar Cronograma
               </button>
             </div>
+          </section>
+
+          <section
+            id="estatisticas"
+            className={activeSection === "estatisticas" ? "block" : "hidden"}
+          >
+            <h2 className="mb-6 text-lg md:text-xl font-semibold">
+              Estatísticas de Atividades
+            </h2>
+            {loadingAtividades ? (
+              <div className="rounded-lg bg-white p-8 shadow text-center">
+                <p className="text-gray-600">Carregando estatísticas...</p>
+              </div>
+            ) : errorAtividades ? (
+              <div className="rounded-lg bg-white p-8 shadow text-center">
+                <p className="text-red-600">{errorAtividades}</p>
+              </div>
+            ) : (
+              <AtividadesChart turmas={turmas} atividades={atividades} />
+            )}
           </section>
 
           <section

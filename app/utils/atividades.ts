@@ -284,3 +284,86 @@ export function getValidCamposExperiencia(): CAMPO_EXPERIENCIA[] {
 }
 
 export { CAMPO_EXPERIENCIA };
+
+
+export interface TurmaAtividade {
+  id: number;
+  ano: number;
+  periodo: SEMESTRE;
+  quantHora: number;
+  data: string;
+  campoExperiencia: CAMPO_EXPERIENCIA;
+  turma: {
+    id: number;
+    nome: string;
+  };
+  objetivo: {
+    id: number;
+    codigo: string;
+    descricao: string;
+  };
+}
+
+export interface TurmaInfo {
+  id: number;
+  nome: string;
+}
+
+export interface ProfessorTurmaAtividadesResponse {
+  turmas: TurmaInfo[];
+  atividades: TurmaAtividade[];
+}
+
+export interface FetchProfessorTurmaAtividadesResult {
+  success: boolean;
+  message?: string;
+  data?: ProfessorTurmaAtividadesResponse;
+  error?: string;
+}
+
+export async function fetchProfessorTurmaAtividades(professorId: number): Promise<FetchProfessorTurmaAtividadesResult> {
+  try {
+    const token = getAuthToken();
+    const response = await fetch(`${config.API_URL}/atividades/turma-atividades/${professorId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        return {
+          success: false,
+          error: 'Não autorizado'
+        };
+      }
+
+      if (response.status === 404) {
+        return {
+          success: false,
+          error: 'Nenhuma turma ou atividade encontrada para o professor'
+        };
+      }
+
+      const errorData = await response.json().catch(() => null);
+      return {
+        success: false,
+        error: errorData?.erro || errorData?.message || `Erro ao buscar atividades: ${response.status}`
+      };
+    }
+
+    const responseData = await response.json();
+    return {
+      success: true,
+      data: responseData
+    };
+  } catch (error) {
+    console.error('Error fetching professor turma atividades:', error);
+    return {
+      success: false,
+      error: 'Erro ao buscar atividades do professor'
+    };
+  }
+}
