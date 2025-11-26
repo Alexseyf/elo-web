@@ -302,20 +302,7 @@ export default function CadastrarCronograma() {
                 </div>
               </div>
 
-              {/* Status Ativo */}
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="isAtivo"
-                  name="isAtivo"
-                  checked={formData.isAtivo}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
-                />
-                <label htmlFor="isAtivo" className="ml-2 block text-sm text-gray-900">
-                  Evento ativo
-                </label>
-              </div>
+
 
               {/* Mensagem de Sucesso/Erro */}
               {mensagem && (
