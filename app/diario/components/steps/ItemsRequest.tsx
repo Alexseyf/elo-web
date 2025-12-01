@@ -88,44 +88,47 @@ export default function ItemsRequest({ value = [], onChange }: ItemsRequestProps
             Itens selecionados ({selectedItems.length}):
           </h3>
           <div className="space-y-2">
-            {selectedItems.map((item) => (
-              <div
-                key={item}
-                className="flex items-center justify-between gap-1 md:gap-2 bg-white p-2 md:p-3 rounded border border-blue-100 hover:border-blue-300 transition min-w-0"
-              >
-                <div className="flex items-center gap-1 md:gap-2 min-w-0 flex-1">
-                  <svg
-                    className="w-3 h-3 md:w-4 md:h-4 text-blue-600 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-gray-700 truncate text-xs md:text-sm">{item}</span>
-                </div>
-                <button
-                  onClick={() => handleRemoveItem(item)}
-                  className="text-red-600 hover:text-red-800 hover:bg-red-50 p-1 rounded transition flex-shrink-0"
-                  title="Remover item"
+            {selectedItems.map((item) => {
+              const itemObj = AVAILABLE_ITEMS.find((i) => i.id === item);
+              return (
+                <div
+                  key={item}
+                  className="flex items-center justify-between gap-1 md:gap-2 bg-white p-2 md:p-3 rounded border border-blue-100 hover:border-blue-300 transition min-w-0"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+                  <div className="flex items-center gap-1 md:gap-2 min-w-0 flex-1">
+                    <svg
+                      className="w-3 h-3 md:w-4 md:h-4 text-blue-600 flex-shrink-0"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-gray-700 truncate text-xs md:text-sm">{itemObj ? itemObj.label : item}</span>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveItem(item)}
+                    className="text-red-600 hover:text-red-800 hover:bg-red-50 p-1 rounded transition flex-shrink-0"
+                    title="Remover item"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-              </div>
-            ))}
+                    <svg
+                      className="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
