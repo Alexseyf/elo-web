@@ -217,3 +217,143 @@ export async function verificarRegistroDiarioAluno(
   }
 }
 
+export interface PeriodoSono {
+  id: number;
+  diarioId: number;
+  inicio: string;
+  fim: string;
+}
+
+export interface ItemProvidencia {
+  id: number;
+  diarioId: number;
+  itemProvidenciaId: number;
+  itemProvidencia: {
+    id: number;
+    descricao: string;
+  };
+}
+
+export interface Diario {
+  id: number;
+  alunoId: number;
+  data: string;
+  periodosSono: PeriodoSono[];
+  itensProvidencia: ItemProvidencia[];
+}
+
+export interface AlunoDetalhes {
+  id: number;
+  nome: string;
+  dataNasc: string;
+  turmaId: number;
+  isAtivo: boolean;
+  mensalidade: number;
+  turma: {
+    id: number;
+    nome: string;
+    turno: string;
+  };
+  responsaveis: Array<{
+    id: number;
+    alunoId: number;
+    usuarioId: number;
+    usuario: {
+      id: number;
+      nome: string;
+      email: string;
+    };
+  }>;
+  diario: Diario[];
+}
+
+export async function getAlunoDetalhes(id: number): Promise<AlunoDetalhes | null> {
+  try {
+    const token = getAuthToken();
+    const response = await fetch(`${config.API_URL}/alunos/${id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        console.error('Unauthorized access');
+        return null;
+      }
+      if (response.status === 404) {
+        console.error('Aluno não encontrado');
+        return null;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data as AlunoDetalhes;
+  } catch (error) {
+    console.error('Erro ao buscar detalhes do aluno:', error);
+    return null;
+  }
+}
+
+export interface AdicionarResponsavelResult {
+  success: boolean;
+  message: string;
+  data?: any;
+}
+
+export async function adicionarResponsavelAluno(
+  alunoId: number,
+  usuarioId: number
+): Promise<AdicionarResponsavelResult> {
+  try {
+    const token = getAuthToken();
+    const response = await fetch(`${config.API_URL}/usuarios/${usuarioId}/responsavel`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ alunoId }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        return {
+          success: false,
+          message: 'Não autorizado'
+        };
+      }
+      if (response.status === 404) {
+        return {
+          success: false,
+          message: 'Usuário não encontrado'
+        };
+      }
+      if (response.status === 400) {
+        const errorData = await response.json().catch(() => null);
+        return {
+          success: false,
+          message: errorData?.erro || 'Erro ao adicionar responsável'
+        };
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+      success: true,
+      message: 'Responsável adicionado com sucesso',
+      data
+    };
+  } catch (error) {
+    console.error('Erro ao adicionar responsável:', error);
+    return {
+      success: false,
+      message: 'Erro ao adicionar responsável'
+    };
+  }
+}
+

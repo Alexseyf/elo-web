@@ -131,3 +131,18 @@ export async function fetchUsuarioDetalhes(usuarioId: number): Promise<{
     };
   }
 }
+
+export async function fetchResponsaveis(): Promise<Usuario[]> {
+  try {
+    const result = await fetchUsuariosAtivos();
+    
+    if (result.success && result.data) {
+      return result.data.RESPONSAVEL;
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('Erro ao buscar responsáveis:', error);
+    return [];
+  }
+}
