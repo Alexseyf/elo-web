@@ -94,6 +94,23 @@ export default function ProfessorDashboard() {
     handleLogout();
   };
 
+  useEffect(() => {
+    if (activeSection === "estatisticas") {
+      window.history.pushState({ estatisticas: true }, "", "#estatisticas");
+    }
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (activeSection === "estatisticas") {
+        setActiveSection("visao-geral");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [activeSection]);
+
   if (!userData) {
     return (
       <div className="flex min-h-screen items-center justify-center">
