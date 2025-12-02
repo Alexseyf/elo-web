@@ -17,6 +17,8 @@ import {
   TurmaInfo 
 } from "../../utils/atividades";
 import AtividadesChart from "../components/AtividadesChart";
+import { getTurmasProfessor, TurmaProfessor } from "../../utils/professores";
+import { formatarNomeTurma } from "../../utils/turmas";
 
 
 export default function ProfessorDashboard() {
@@ -28,6 +30,9 @@ export default function ProfessorDashboard() {
   const [atividades, setAtividades] = useState<TurmaAtividade[]>([]);
   const [loadingAtividades, setLoadingAtividades] = useState<boolean>(false);
   const [errorAtividades, setErrorAtividades] = useState<string>("");
+  const [turmasProfessor, setTurmasProfessor] = useState<TurmaProfessor[]>([]);
+  const [loadingTurmasProfessor, setLoadingTurmasProfessor] = useState(false);
+  const [errorTurmasProfessor, setErrorTurmasProfessor] = useState("");
 
   const sidebarItems = getProfessorSidebarItems();
 
@@ -38,7 +43,6 @@ export default function ProfessorDashboard() {
   useEffect(() => {
     if (checkUserRole(router, "PROFESSOR")) {
       setUserData(getAuthUser());
-
       const urlParams = new URLSearchParams(window.location.search);
       const sectionParam = urlParams.get("section");
       if (
@@ -70,6 +74,22 @@ export default function ProfessorDashboard() {
     };
 
     loadAtividades();
+  }, [userData]);
+
+  useEffect(() => {
+    const loadTurmasProfessor = async () => {
+      if (!userData?.id) return;
+      setLoadingTurmasProfessor(true);
+      setErrorTurmasProfessor("");
+      const result = await getTurmasProfessor(userData.id);
+      if (result.success && result.data) {
+        setTurmasProfessor(result.data);
+      } else {
+        setErrorTurmasProfessor(result.message || "Erro ao carregar turmas");
+      }
+      setLoadingTurmasProfessor(false);
+    };
+    loadTurmasProfessor();
   }, [userData]);
 
 
@@ -131,6 +151,7 @@ export default function ProfessorDashboard() {
               Visão Geral
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {/* Cards padrão */}
               <button
                 onClick={() => router.push("/professor/atividades")}
                 className="rounded-lg bg-white p-4 md:p-6 shadow hover:shadow-lg transition-shadow text-left"
@@ -142,7 +163,6 @@ export default function ProfessorDashboard() {
                   Visualize as últimas atividades de suas turmas.
                 </p>
               </button>
-
               <button
                 onClick={() => setActiveSection("estatisticas")}
                 className="rounded-lg bg-white p-4 md:p-6 shadow hover:shadow-lg transition-shadow text-left"
@@ -164,19 +184,31 @@ export default function ProfessorDashboard() {
             <h2 className="mb-6 text-lg md:text-xl font-semibold">
               Minhas Turmas
             </h2>
-            <div className="rounded-lg bg-white p-6 shadow">
-              <h3 className="text-lg font-medium mb-4">Turmas Atribuídas</h3>
-              <p className="mb-4 text-gray-600">
-                Visualize e gerencie todas as suas turmas.
-              </p>
-              <button
-                className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto"
-                onClick={() => {
-                  /* Implementar navegação para turmas */
-                }}
-              >
-                Acessar Turmas
-              </button>
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {loadingTurmasProfessor ? (
+                <div className="rounded-lg bg-white p-4 md:p-6 shadow text-center col-span-full">
+                  <span className="text-gray-600">Carregando turmas...</span>
+                </div>
+              ) : errorTurmasProfessor ? (
+                <div className="rounded-lg bg-white p-4 md:p-6 shadow text-center col-span-full">
+                  <span className="text-red-600">{errorTurmasProfessor}</span>
+                </div>
+              ) : turmasProfessor.length > 0 ? (
+                turmasProfessor.map((turma) => (
+                  <button
+                    key={turma.id}
+                    onClick={() => router.push(`/professor/alunos?turmaId=${turma.id}`)}
+                    className="rounded-lg bg-white p-4 md:p-6 shadow hover:shadow-lg transition-shadow text-left border border-gray-200"
+                  >
+                    <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold truncate text-gray-900">{formatarNomeTurma(turma.nome)}</h3>
+                    <p className="text-gray-700 text-xs md:text-sm">{turma.totalAlunos} aluno{turma.totalAlunos !== 1 ? "s" : ""}</p>
+                  </button>
+                ))
+              ) : (
+                <div className="rounded-lg bg-white p-4 md:p-6 shadow text-center col-span-full">
+                  <span className="text-gray-600">Nenhuma turma atribuída.</span>
+                </div>
+              )}
             </div>
           </section>
 
