@@ -50,12 +50,6 @@ export default function DiarioVisualizarSummary({ diario }: DiarioVisualizarSumm
 
   return (
     <div className="space-y-6 max-w-xl mx-auto">
-      <h2 className="hidden md:block text-2xl font-bold text-gray-800">Resumo do Diário</h2>
-      <p className="text-gray-600">Visualização dos dados registrados.</p>
-      <div className="mb-2">
-        <span className="font-semibold text-gray-700">Aluno:</span> {diario.aluno?.nome}
-      </div>
-
       {/* Refeições */}
       <div className="bg-blue-50 p-4 rounded-lg">
         <h3 className="font-semibold text-gray-800 mb-3">Refeições</h3>
@@ -124,7 +118,7 @@ export default function DiarioVisualizarSummary({ diario }: DiarioVisualizarSumm
           <h3 className="font-semibold text-gray-800 mb-3">Itens Solicitados</h3>
           <div className="space-y-1 text-sm">
             <p className="text-gray-700">
-              {formatItemsList(diario.itensProvidencia.map(i => i.itemProvidencia?.nome))}
+              {formatItemsList(diario.itensProvidencia.map(i => formatValue(i.itemProvidencia?.nome)))}
             </p>
           </div>
         </div>
