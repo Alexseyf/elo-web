@@ -11,15 +11,14 @@ import {
 import { usePreventBackNavigation } from "../../hooks";
 import { Sidebar } from "../../components";
 import { getProfessorSidebarItems } from "../../utils/sidebarItems";
-import { 
-  fetchProfessorTurmaAtividades, 
-  TurmaAtividade, 
-  TurmaInfo 
+import {
+  fetchProfessorTurmaAtividades,
+  TurmaAtividade,
+  TurmaInfo,
 } from "../../utils/atividades";
 import AtividadesChart from "../components/AtividadesChart";
 import { getTurmasProfessor, TurmaProfessor } from "../../utils/professores";
 import { formatarNomeTurma } from "../../utils/turmas";
-
 
 export default function ProfessorDashboard() {
   const router = useRouter();
@@ -38,7 +37,6 @@ export default function ProfessorDashboard() {
 
   // PREVINE QUE USUARIOS RETORNEM À PÁGINA DE LOGIN APÓS LOGAR
   usePreventBackNavigation();
-
 
   useEffect(() => {
     if (checkUserRole(router, "PROFESSOR")) {
@@ -62,7 +60,7 @@ export default function ProfessorDashboard() {
       setErrorAtividades("");
 
       const result = await fetchProfessorTurmaAtividades(userData.id);
-      
+
       if (result.success && result.data) {
         setTurmas(result.data.turmas);
         setAtividades(result.data.atividades);
@@ -91,7 +89,6 @@ export default function ProfessorDashboard() {
     };
     loadTurmasProfessor();
   }, [userData]);
-
 
   const onLogout = () => {
     handleLogout();
@@ -197,16 +194,25 @@ export default function ProfessorDashboard() {
                 turmasProfessor.map((turma) => (
                   <button
                     key={turma.id}
-                    onClick={() => router.push(`/professor/alunos?turmaId=${turma.id}`)}
+                    onClick={() =>
+                      router.push(`/professor/alunos?turmaId=${turma.id}`)
+                    }
                     className="rounded-lg bg-white p-4 md:p-6 shadow hover:shadow-lg transition-shadow text-left border border-gray-200"
                   >
-                    <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold truncate text-gray-900">{formatarNomeTurma(turma.nome)}</h3>
-                    <p className="text-gray-700 text-xs md:text-sm">{turma.totalAlunos} aluno{turma.totalAlunos !== 1 ? "s" : ""}</p>
+                    <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold truncate text-gray-900">
+                      {formatarNomeTurma(turma.nome)}
+                    </h3>
+                    <p className="text-gray-700 text-xs md:text-sm">
+                      {turma.totalAlunos} aluno
+                      {turma.totalAlunos !== 1 ? "s" : ""}
+                    </p>
                   </button>
                 ))
               ) : (
                 <div className="rounded-lg bg-white p-4 md:p-6 shadow text-center col-span-full">
-                  <span className="text-gray-600">Nenhuma turma atribuída.</span>
+                  <span className="text-gray-600">
+                    Nenhuma turma atribuída.
+                  </span>
                 </div>
               )}
             </div>
@@ -227,14 +233,22 @@ export default function ProfessorDashboard() {
                 <p className="mb-4 text-gray-600">
                   Registre atividades realizadas em sala.
                 </p>
-                <button
-                  className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto"
-                  onClick={() => {
-                    router.push('/professor/atividades/cadastrar');
-                  }}
-                >
-                  Registrar nova atividade
-                </button>
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:w-fit">
+                  <button
+                    className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto"
+                    onClick={() => {
+                      router.push("/professor/atividades/cadastrar");
+                    }}
+                  >
+                    Registrar nova atividade
+                  </button>
+                  <button
+                    onClick={() => router.push("/professor/atividades")}
+                    className="rounded bg-green-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-green-700 active:bg-green-800 transition-colors w-full sm:w-auto"
+                  >
+                    Listar Atividades
+                  </button>
+                </div>
               </div>
             </div>
           </section>
@@ -256,7 +270,7 @@ export default function ProfessorDashboard() {
               <button
                 className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto"
                 onClick={() => {
-                  router.push('/professor/alunos');
+                  router.push("/professor/alunos");
                 }}
               >
                 Ver Alunos
@@ -277,13 +291,13 @@ export default function ProfessorDashboard() {
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:w-fit">
                 <button
                   className="sm:flex-none flex-1 rounded bg-green-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-green-700 active:bg-green-800 transition-colors"
-                  onClick={() => router.push('/diario/novo')}
+                  onClick={() => router.push("/diario/novo")}
                 >
                   Registrar Novo Diário
                 </button>
                 <button
                   className="sm:flex-none flex-1 rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors"
-                  onClick={() => router.push('/diario')}
+                  onClick={() => router.push("/diario")}
                 >
                   Visualizar Diários
                 </button>
@@ -337,9 +351,9 @@ export default function ProfessorDashboard() {
               <p className="mb-4 text-gray-600">
                 Acompanhe o cronograma anual de eventos da escola.
               </p>
-              <button 
+              <button
                 className="rounded bg-blue-600 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs lg:text-sm text-white font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors w-full sm:w-auto"
-                onClick={() => router.push('/cronograma')}
+                onClick={() => router.push("/cronograma")}
               >
                 Visualizar Cronograma
               </button>
