@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Sidebar, CustomSelect } from '@/app/components';
@@ -23,6 +23,8 @@ export default function CronogramaPage() {
   const [activeSection, setActiveSection] = useState('cronograma');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarItems, setSidebarItems] = useState<ReturnType<typeof getSidebarItems>>([]);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const mobileFiltersRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -36,6 +38,19 @@ export default function CronogramaPage() {
     }
     carregarCronogramas();
   }, [router]);
+
+  useEffect(() => {
+    if (!mobileFiltersOpen) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (mobileFiltersRef.current && !mobileFiltersRef.current.contains(event.target as Node)) {
+        setMobileFiltersOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [mobileFiltersOpen]);
 
   const carregarCronogramas = async () => {
     setIsLoading(true);
@@ -162,8 +177,50 @@ export default function CronogramaPage() {
               </button>
               <h1 className="text-3xl font-bold text-gray-800">Cronograma Anual</h1>
             </div>
-            
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Filtros - Mobile */}
+            <div className="mt-4 lg:hidden relative">
+              <button
+                onClick={() => setMobileFiltersOpen((open) => !open)}
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Filtros
+              </button>
+              {mobileFiltersOpen && (
+                <div className="absolute left-0 right-0 mt-2 z-40 bg-white rounded-lg shadow-lg p-6">
+                  <div className="space-y-4">
+                    <input
+                      type="text"
+                      placeholder="Buscar por título..."
+                      value={filtro}
+                      onChange={(e) => setFiltro(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <CustomSelect
+                      id="mesFiltro"
+                      name="mesFiltro"
+                      value={mesFiltro}
+                      onChange={(e) => setMesFiltro(e.target.value)}
+                      options={[{ value: '', label: 'Todos os meses' }, { value: '1', label: 'Janeiro' }, { value: '2', label: 'Fevereiro' }, { value: '3', label: 'Março' }, { value: '4', label: 'Abril' }, { value: '5', label: 'Maio' }, { value: '6', label: 'Junho' }, { value: '7', label: 'Julho' }, { value: '8', label: 'Agosto' }, { value: '9', label: 'Setembro' }, { value: '10', label: 'Outubro' }, { value: '11', label: 'Novembro' }, { value: '12', label: 'Dezembro' }]}
+                    />
+                    <CustomSelect
+                      id="tipoFiltro"
+                      name="tipoFiltro"
+                      value={tipoFiltro}
+                      onChange={(e) => setTipoFiltro(e.target.value)}
+                      options={[{ value: '', label: 'Todos os tipos' }, { value: TIPO_EVENTO.REUNIAO, label: 'Reunião' }, { value: TIPO_EVENTO.FERIADO, label: 'Feriado' }, { value: TIPO_EVENTO.RECESSO, label: 'Recesso' }, { value: TIPO_EVENTO.EVENTO_ESCOLAR, label: 'Evento Escolar' }, { value: TIPO_EVENTO.ATIVIDADE_PEDAGOGICA, label: 'Atividade Pedagógica' }, { value: TIPO_EVENTO.OUTRO, label: 'Outro' }]}
+                    />
+                    <button
+                      onClick={() => setMobileFiltersOpen(false)}
+                      className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium mt-2"
+                    >
+                      Fechar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Filtros - Desktop */}
+            <div className="mt-4 hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <input
                 type="text"
                 placeholder="Buscar por título..."
