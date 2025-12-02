@@ -186,35 +186,47 @@ export default function CronogramaPage() {
                 Filtros
               </button>
               {mobileFiltersOpen && (
-                <div className="absolute left-0 right-0 mt-2 z-40 bg-white rounded-lg shadow-lg p-6">
-                  <div className="space-y-4">
-                    <input
-                      type="text"
-                      placeholder="Buscar por título..."
-                      value={filtro}
-                      onChange={(e) => setFiltro(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <CustomSelect
-                      id="mesFiltro"
-                      name="mesFiltro"
-                      value={mesFiltro}
-                      onChange={(e) => setMesFiltro(e.target.value)}
-                      options={[{ value: '', label: 'Todos os meses' }, { value: '1', label: 'Janeiro' }, { value: '2', label: 'Fevereiro' }, { value: '3', label: 'Março' }, { value: '4', label: 'Abril' }, { value: '5', label: 'Maio' }, { value: '6', label: 'Junho' }, { value: '7', label: 'Julho' }, { value: '8', label: 'Agosto' }, { value: '9', label: 'Setembro' }, { value: '10', label: 'Outubro' }, { value: '11', label: 'Novembro' }, { value: '12', label: 'Dezembro' }]}
-                    />
-                    <CustomSelect
-                      id="tipoFiltro"
-                      name="tipoFiltro"
-                      value={tipoFiltro}
-                      onChange={(e) => setTipoFiltro(e.target.value)}
-                      options={[{ value: '', label: 'Todos os tipos' }, { value: TIPO_EVENTO.REUNIAO, label: 'Reunião' }, { value: TIPO_EVENTO.FERIADO, label: 'Feriado' }, { value: TIPO_EVENTO.RECESSO, label: 'Recesso' }, { value: TIPO_EVENTO.EVENTO_ESCOLAR, label: 'Evento Escolar' }, { value: TIPO_EVENTO.ATIVIDADE_PEDAGOGICA, label: 'Atividade Pedagógica' }, { value: TIPO_EVENTO.OUTRO, label: 'Outro' }]}
-                    />
-                    <button
-                      onClick={() => setMobileFiltersOpen(false)}
-                      className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium mt-2"
-                    >
-                      Fechar
-                    </button>
+                <div className="absolute left-0 right-0 mt-2 z-40">
+                  <div
+                    ref={mobileFiltersRef}
+                    className="bg-white rounded-lg shadow-lg p-6"
+                    tabIndex={-1}
+                    onBlur={(e) => {
+                      // Fecha ao perderfoco
+                      if (!e.currentTarget.contains(e.relatedTarget)) {
+                        setMobileFiltersOpen(false);
+                      }
+                    }}
+                  >
+                    <div className="space-y-4">
+                      <input
+                        type="text"
+                        placeholder="Buscar por título..."
+                        value={filtro}
+                        onChange={(e) => setFiltro(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <CustomSelect
+                        id="mesFiltro"
+                        name="mesFiltro"
+                        value={mesFiltro}
+                        onChange={(e) => setMesFiltro(e.target.value)}
+                        options={[{ value: '', label: 'Todos os meses' }, { value: '1', label: 'Janeiro' }, { value: '2', label: 'Fevereiro' }, { value: '3', label: 'Março' }, { value: '4', label: 'Abril' }, { value: '5', label: 'Maio' }, { value: '6', label: 'Junho' }, { value: '7', label: 'Julho' }, { value: '8', label: 'Agosto' }, { value: '9', label: 'Setembro' }, { value: '10', label: 'Outubro' }, { value: '11', label: 'Novembro' }, { value: '12', label: 'Dezembro' }]}
+                      />
+                      <CustomSelect
+                        id="tipoFiltro"
+                        name="tipoFiltro"
+                        value={tipoFiltro}
+                        onChange={(e) => setTipoFiltro(e.target.value)}
+                        options={[{ value: '', label: 'Todos os tipos' }, { value: TIPO_EVENTO.REUNIAO, label: 'Reunião' }, { value: TIPO_EVENTO.FERIADO, label: 'Feriado' }, { value: TIPO_EVENTO.RECESSO, label: 'Recesso' }, { value: TIPO_EVENTO.EVENTO_ESCOLAR, label: 'Evento Escolar' }, { value: TIPO_EVENTO.ATIVIDADE_PEDAGOGICA, label: 'Atividade Pedagógica' }, { value: TIPO_EVENTO.OUTRO, label: 'Outro' }]}
+                      />
+                      <button
+                        onClick={() => setMobileFiltersOpen(false)}
+                        className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium mt-2"
+                      >
+                        Fechar
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
