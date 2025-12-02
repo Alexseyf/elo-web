@@ -224,7 +224,7 @@ export default function ListarAlunos() {
                     </th>
                     <th
                       scope="col"
-                      className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="hidden md:table-cell px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
                       Turma
                     </th>
@@ -251,7 +251,7 @@ export default function ListarAlunos() {
                       <td className="hidden sm:table-cell px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {aluno.matricula}
                       </td>
-                      <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="hidden md:table-cell px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {aluno.turma?.nome ? formatarNomeTurma(aluno.turma.nome) : "-"}
                       </td>
                       <td className="hidden md:table-cell px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
@@ -259,12 +259,14 @@ export default function ListarAlunos() {
                       </td>
                       <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
-                          className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-3 py-1.5 rounded text-xs font-medium transition-colors duration-200"
+                          className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-2 py-1 rounded text-sm font-bold transition-colors duration-200 md:px-3 md:py-1.5 md:text-xs"
                           onClick={() =>
                             router.push(`/admin/alunos/${aluno.id}`)
                           }
+                          title="Ver detalhes"
                         >
-                          Ver Detalhes
+                          <span className="md:hidden">+</span>
+                          <span className="hidden md:inline">Detalhes</span>
                         </button>
                       </td>
                     </tr>
