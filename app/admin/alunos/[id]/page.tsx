@@ -7,7 +7,7 @@ import {
   handleLogout,
   checkUserRole,
 } from "../../../utils/auth";
-import { Sidebar } from "../../../components";
+import { Sidebar, CustomSelect } from "../../../components";
 import { getAlunoDetalhes, AlunoDetalhes, adicionarResponsavelAluno } from "../../../utils/alunos";
 import { getAdminSidebarItems } from "../../../utils/sidebarItems";
 import { fetchResponsaveis } from "../../../utils/usuarios";
@@ -224,18 +224,20 @@ export default function AlunoDetalhesPage() {
                     <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-blue-500"></div>
                   </div>
                 ) : responsaveis.length > 0 ? (
-                  <select
+                  <CustomSelect
+                    id="responsavelSelect"
+                    name="responsavel"
                     value={usuarioId}
                     onChange={(e) => setUsuarioId(e.target.value)}
-                    className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  >
-                    <option value="">-- Selecione um responsável --</option>
-                    {responsaveis.map((resp) => (
-                      <option key={resp.id} value={resp.id}>
-                        {resp.nome} ({resp.email})
-                      </option>
-                    ))}
-                  </select>
+                    searchable={true}
+                    options={[
+                      { value: '', label: '-- Selecione um responsável --' },
+                      ...responsaveis.map((resp) => ({
+                        value: resp.id,
+                        label: resp.nome
+                      }))
+                    ]}
+                  />
                 ) : (
                   <p className="text-sm text-gray-600 p-3 bg-gray-50 rounded border border-gray-200">
                     Nenhum responsável disponível

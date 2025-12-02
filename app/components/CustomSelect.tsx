@@ -11,6 +11,7 @@ interface CustomSelectProps {
   className?: string;
   error?: boolean;
   errorColor?: string;
+  searchable?: boolean;
 }
 
 export function CustomSelect({
@@ -21,17 +22,21 @@ export function CustomSelect({
   options,
   className = '',
   error = false,
-  errorColor = 'border-red-300 focus:ring-red-500'
+  errorColor = 'border-red-300 focus:ring-red-500',
+  searchable = false
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: Event) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setSearchTerm('');
       }
     }
 
@@ -42,6 +47,12 @@ export function CustomSelect({
       document.removeEventListener('touchstart', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (isOpen && searchable && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isOpen, searchable]);
 
   const handleSelectOption = (optionValue: string | number) => {
     const event = {
@@ -59,6 +70,12 @@ export function CustomSelect({
   const selectedLabel = options.find(opt => String(opt.value) === String(value))?.label || 'Selecione uma opção';
 
   const baseClass = error ? errorColor : 'border-gray-300 focus:ring-blue-500';
+
+  const filteredOptions = searchable && searchTerm
+    ? options.filter(opt => 
+        opt.label.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : options;
 
   return (
     <div ref={containerRef} className="relative w-full min-w-0">
@@ -84,18 +101,37 @@ export function CustomSelect({
           ref={dropdownRef}
           className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
         >
-          {options.map((option, index) => (
-            <button
-              key={`${option.value}-${index}`}
-              type="button"
-              onClick={() => handleSelectOption(option.value)}
-              className={`w-full px-3 py-2 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none ${
-                String(value) === String(option.value) ? 'bg-blue-100 font-semibold' : ''
-              }`}
-            >
-              <span className="block whitespace-normal break-words">{option.label}</span>
-            </button>
-          ))}
+          {searchable && (
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-2">
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Buscar..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+          )}
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((option, index) => (
+              <button
+                key={`${option.value}-${index}`}
+                type="button"
+                onClick={() => handleSelectOption(option.value)}
+                className={`w-full px-3 py-2 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none ${
+                  String(value) === String(option.value) ? 'bg-blue-100 font-semibold' : ''
+                }`}
+              >
+                <span className="block whitespace-normal break-words">{option.label}</span>
+              </button>
+            ))
+          ) : (
+            <div className="px-3 py-2 text-sm text-gray-600">
+              Nenhuma opção encontrada
+            </div>
+          )}
         </div>
       )}
 
