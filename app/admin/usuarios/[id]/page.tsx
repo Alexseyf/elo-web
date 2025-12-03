@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import Link from "next/link";
 import {
-  isAuthenticated,
   getAuthUser,
   handleLogout,
   checkUserRole,
@@ -110,15 +108,6 @@ export default function DetalhesUsuario() {
         </header>
 
         <main className="p-4 md:pt-6 lg:p-8">
-          {/* Breadcrumb */}
-          <div className="mb-6 flex items-center gap-2 text-sm text-gray-600">
-            <Link href="/admin/dashboard?section=usuarios" className="hover:text-blue-600 underline">
-              Usuários
-            </Link>
-            <span>/</span>
-            <span>Detalhes</span>
-          </div>
-
           {loading ? (
             <div className="flex justify-center p-8">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>

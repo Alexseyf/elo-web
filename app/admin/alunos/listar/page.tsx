@@ -265,7 +265,7 @@ export default function ListarAlunos() {
                           }
                           title="Ver detalhes"
                         >
-                          <span className="md:hidden">+</span>
+                          <span className="md:hidden">Detelhes</span>
                           <span className="hidden md:inline">Detalhes</span>
                         </button>
                       </td>

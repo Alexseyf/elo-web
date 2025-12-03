@@ -117,72 +117,6 @@ export default function AlunosPorTurmaPage() {
         </header>
 
         <main className="p-4 md:pt-6 lg:p-8">
-          {/* Breadcrumb */}
-          <nav className="flex mb-6" aria-label="Breadcrumb">
-            <ol className="inline-flex items-center space-x-1 md:space-x-3">
-              <li className="inline-flex items-center">
-                <button
-                  onClick={() => router.push("/admin/dashboard?section=turmas")}
-                  className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
-                >
-                  <svg
-                    className="w-3 h-3 mr-2.5"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
-                  </svg>
-                  Turmas
-                </button>
-              </li>
-              <li>
-                <div className="flex items-center">
-                  <svg
-                    className="w-3 h-3 text-gray-400 mx-1"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 6 10"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m1 9 4-4-4-4"
-                    />
-                  </svg>
-                  <span className="ml-1 text-sm font-medium text-gray-500 md:ml-2">
-                    {loadingTurma ? "Carregando..." : turma ? turma.nome : "Turma"}
-                  </span>
-                </div>
-              </li>
-              <li aria-current="page">
-                <div className="flex items-center">
-                  <svg
-                    className="w-3 h-3 text-gray-400 mx-1"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 6 10"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m1 9 4-4-4-4"
-                    />
-                  </svg>
-                  <span className="ml-1 text-sm font-medium text-gray-500 md:ml-2">
-                    Alunos
-                  </span>
-                </div>
-              </li>
-            </ol>
-          </nav>
 
           {/* Cabeçalho */}
           <div className="mb-6">
@@ -278,18 +212,6 @@ export default function AlunosPorTurmaPage() {
                           </th>
                           <th
                             scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                          >
-                            Email
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                          >
-                            Matrícula
-                          </th>
-                          <th
-                            scope="col"
                             className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
                             Ações
@@ -302,29 +224,13 @@ export default function AlunosPorTurmaPage() {
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                               {aluno.nome}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {aluno.email || "-"}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {aluno.matricula || "-"}
-                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <div className="flex justify-end gap-2">
-                                <button
-                                  className="text-blue-600 hover:text-blue-900 text-xs bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded"
-                                  onClick={() => {
-                                    /* Implementar visualização de perfil do aluno */
-                                  }}
-                                >
-                                  Ver Perfil
-                                </button>
-                                <button
-                                  className="text-green-600 hover:text-green-900 text-xs bg-green-100 hover:bg-green-200 px-2 py-1 rounded"
-                                  onClick={() => router.push(`/diario/visualizar/${aluno.id}`)}
-                                >
-                                  Diário
-                                </button>
-                              </div>
+                              <button
+                                className="text-green-600 hover:text-green-900 text-xs bg-green-100 hover:bg-green-200 px-2 py-1 rounded"
+                                onClick={() => router.push(`/diario/visualizar/${aluno.id}`)}
+                              >
+                                Diário
+                              </button>
                             </td>
                           </tr>
                         ))}

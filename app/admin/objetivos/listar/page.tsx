@@ -51,6 +51,20 @@ export default function ListarObjetivos() {
 
   const onLogout = () => handleLogout();
 
+  const getGrupoColor = (grupoId: number | undefined) => {
+    if (!grupoId) return 'bg-gray-50';
+    
+    const grupo = grupos.find(g => g.id === grupoId);
+    if (!grupo) return 'bg-gray-50';
+    
+    const nome = grupo.nome.toLowerCase();
+    
+    if (nome.includes('bebes')) return 'bg-blue-50';
+    if (nome.includes('bem_pequenas') || nome.includes('bem_pequenos')) return 'bg-green-50';
+    if (nome.includes('_pequenas') || nome.includes('_pequenos')) return 'bg-amber-50';
+    return 'bg-gray-50';
+  };
+
   if (!userData) return <div className="flex min-h-screen items-center justify-center">Carregando...</div>;
 
   const sidebarItems = [
@@ -118,15 +132,48 @@ export default function ListarObjetivos() {
             </div>
           )}
 
+          <div className="md:hidden mb-6 flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-blue-50 border border-blue-200"></div>
+              <span className="text-sm text-gray-600">Bebês</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-green-50 border border-green-200"></div>
+              <span className="text-sm text-gray-600">Crianças Bem Pequenas</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-amber-50 border border-amber-200"></div>
+              <span className="text-sm text-gray-600">Crianças Pequenas</span>
+            </div>
+          </div>
+
           <div className="bg-white shadow-md rounded-lg p-6">
             {isLoading ? (
               <div className="flex items-center justify-center">Carregando objetivos...</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
+                {/* Tabela Mobile - formato card */}
+                <div className="md:hidden space-y-3">
+                  {objetivos.length === 0 ? (
+                    <p className="text-center text-sm text-gray-500">Nenhum objetivo encontrado.</p>
+                  ) : (
+                    objetivos.map((obj: any) => (
+                      <div key={obj.id} className={`rounded-lg p-4 space-y-2 ${getGrupoColor(obj.grupoId)}`}>
+                        <div className="text-xs font-semibold text-gray-500 uppercase">
+                          {(campos.find(c => c.id === obj.campoExperienciaId) && (formatarCampoExperiencia((campos.find(c => c.id === obj.campoExperienciaId) as any).campoExperiencia) || (campos.find(c => c.id === obj.campoExperienciaId) as any).nome)) || '—'}
+                        </div>
+                        <div className="text-lg font-semibold text-gray-900">{obj.codigo}</div>
+                        <div className="text-sm text-gray-700">{obj.descricao}</div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Tabela Desktop - com coluna Grupo */}
+                <table className="hidden md:table min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Código</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descrição</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grupo</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Campo</th>
@@ -140,7 +187,7 @@ export default function ListarObjetivos() {
                     ) : (
                       objetivos.map((obj: any) => (
                         <tr key={obj.id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{obj.codigo}</td>
+                          <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900 w-16">{obj.codigo}</td>
                           <td className="px-6 py-4 text-sm text-gray-700 max-w-md">{obj.descricao}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{(grupos.find(g => g.id === obj.grupoId) && formatarNomeGrupo((grupos.find(g => g.id === obj.grupoId) as Grupo).nome)) || '—'}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{(campos.find(c => c.id === obj.campoExperienciaId) && (formatarCampoExperiencia((campos.find(c => c.id === obj.campoExperienciaId) as any).campoExperiencia) || (campos.find(c => c.id === obj.campoExperienciaId) as any).nome)) || '—'}</td>
